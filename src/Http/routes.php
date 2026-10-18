@@ -35,6 +35,8 @@ Route::group([
     Route::group(['middleware' => 'can:comlink.identity'], function () {
         Route::get('/identity', [IdentityController::class, 'index'])
             ->name('seatcomlink::identity');
+        Route::get('/discord/callback', [IdentityController::class, 'callback'])
+            ->name('seatcomlink::discord.callback');
     });
 
     Route::group(['middleware' => 'can:comlink.mappings'], function () {
@@ -45,6 +47,12 @@ Route::group([
     Route::group(['middleware' => 'can:comlink.settings'], function () {
         Route::get('/settings', [SettingsController::class, 'index'])
             ->name('seatcomlink::settings');
+        Route::post('/settings', [SettingsController::class, 'update'])
+            ->name('seatcomlink::settings.update');
+        Route::get('/settings/preview', [SettingsController::class, 'preview'])
+            ->name('seatcomlink::settings.preview');
+        Route::post('/settings/servers/{server}', [SettingsController::class, 'updateServer'])
+            ->name('seatcomlink::settings.server');
     });
 
     Route::group(['middleware' => 'can:comlink.logs'], function () {

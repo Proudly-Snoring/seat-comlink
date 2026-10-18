@@ -38,4 +38,12 @@ class IdentityController extends Controller
     {
         return view('comlink::identity.index');
     }
+
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function callback()
+    {
+        return redirect()->route('seatcomlink::identity');
+    }
 }
