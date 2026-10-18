@@ -27,6 +27,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use ProudlySnoring\Seat\Comlink\Models\ComlinkLog;
 use Seat\Web\Http\Controllers\Controller;
+use Seat\Web\Models\User;
 
 /**
  * Class LogsController.
@@ -35,6 +36,9 @@ use Seat\Web\Http\Controllers\Controller;
  */
 class LogsController extends Controller
 {
+    // user filter value for logs without origin user (synchronization)
+    const SYSTEM = 'system';
+
     /**
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\View\View
@@ -46,10 +50,14 @@ class LogsController extends Controller
             'driver' => 'nullable|string|max:32',
             'from' => 'nullable|date',
             'to' => 'nullable|date',
+            'user' => ['nullable', 'regex:/^(system|\d+)$/'],
         ]);
 
         $logs = ComlinkLog::with('user')
             ->when($filters['level'] ?? null, fn ($query, $level) => $query->where('level', $level))
+            ->when($filters['user'] ?? null, function ($query, $user) {
+                $user === self::SYSTEM ? $query->whereNull('user_id') : $query->where('user_id', (int) $user);
+            })
             ->when($filters['driver'] ?? null, fn ($query, $driver) => $query->where('driver', $driver))
             ->when($filters['from'] ?? null, fn ($query, $from) => $query->where('created_at', '>=', Carbon::parse($from)->startOfDay()))
             ->when($filters['to'] ?? null, fn ($query, $to) => $query->where('created_at', '<=', Carbon::parse($to)->endOfDay()))
@@ -61,6 +69,9 @@ class LogsController extends Controller
             'filters' => $filters,
             'levels' => ComlinkLog::LEVELS,
             'drivers' => ComlinkLog::distinct()->orderBy('driver')->pluck('driver'),
+            // users at the origin of at least one log
+            'users' => User::whereIn('id', ComlinkLog::whereNotNull('user_id')->distinct()->select('user_id'))
+                ->orderBy('name')->pluck('name', 'id'),
         ]);
     }
 }

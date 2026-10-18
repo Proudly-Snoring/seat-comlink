@@ -48,6 +48,27 @@ class LogsAndUsersTest extends TestCase
         $this->actingAs($this->admin)->get(route('seatcomlink::logs', ['level' => 'nope']))->assertSessionHasErrors('level');
     }
 
+    public function testLogsUserColumnAndFilter()
+    {
+        $alice = $this->makeUser('Alice Pilot');
+        $this->actingAs($alice);
+        ComlinkLogger::info('by alice');
+        auth()->logout();
+        ComlinkLogger::info('by the sync');
+
+        $this->actingAs($this->admin)->get(route('seatcomlink::logs'))
+            ->assertSee('<th>' . trans('comlink::comlink.log_user') . '</th>', false)
+            ->assertSee('<option value="' . $alice->id . '" >Alice Pilot</option>', false)
+            ->assertSeeInOrder(['Alice Pilot', '<td>by alice</td>'], false)
+            ->assertSeeInOrder([trans('comlink::comlink.log_system'), '<td>by the sync</td>'], false);
+
+        $this->actingAs($this->admin)->get(route('seatcomlink::logs', ['user' => $alice->id]))
+            ->assertSee('by alice')->assertDontSee('by the sync');
+        $this->actingAs($this->admin)->get(route('seatcomlink::logs', ['user' => 'system']))
+            ->assertSee('by the sync')->assertDontSee('by alice');
+        $this->actingAs($this->admin)->get(route('seatcomlink::logs', ['user' => 'x']))->assertSessionHasErrors('user');
+    }
+
     public function testLogsArePaginated()
     {
         foreach (range(1, 60) as $i)

@@ -25,8 +25,17 @@
             @endforeach
           </select>
         </div>
+        <div class="col-md-2">
+          <select name="user" class="form-control form-control-sm" aria-label="{{ trans('comlink::comlink.log_user') }}">
+            <option value="">{{ trans('comlink::comlink.log_user') }}: {{ trans('comlink::comlink.all') }}</option>
+            <option value="system" @selected(($filters['user'] ?? null) === 'system')>{{ trans('comlink::comlink.log_system') }}</option>
+            @foreach($users as $id => $name)
+              <option value="{{ $id }}" @selected(($filters['user'] ?? null) == $id)>{{ $name }}</option>
+            @endforeach
+          </select>
+        </div>
         @foreach(['from', 'to'] as $bound)
-          <div class="col-md-3">
+          <div class="col-md-2">
             <div class="input-group input-group-sm">
               <div class="input-group-prepend">
                 <label class="input-group-text" for="log_{{ $bound }}">{{ trans('comlink::comlink.' . $bound) }}</label>
@@ -47,6 +56,7 @@
             <th class="text-nowrap">{{ trans('comlink::comlink.date') }}</th>
             <th>{{ trans('comlink::comlink.level') }}</th>
             <th>{{ trans('comlink::comlink.driver') }}</th>
+            <th>{{ trans('comlink::comlink.log_user') }}</th>
             <th>{{ trans('comlink::comlink.message') }}</th>
           </tr>
         </thead>
@@ -56,15 +66,19 @@
               <td class="text-nowrap">{{ $log->created_at }}</td>
               <td><span class="badge badge-{{ $log->level_class }}">{{ $log->level }}</span></td>
               <td>{{ $log->driver }}</td>
-              <td>
-                {{ $log->message }}
+              <td class="text-nowrap">
                 @if($log->user)
-                  <small class="text-muted">- {{ $log->user->name }}</small>
+                  {{ $log->user->name }}
+                @elseif($log->user_id)
+                  <span class="text-muted">#{{ $log->user_id }}</span>
+                @else
+                  <span class="text-muted">{{ trans('comlink::comlink.log_system') }}</span>
                 @endif
               </td>
+              <td>{{ $log->message }}</td>
             </tr>
           @empty
-            <tr><td colspan="4" class="text-muted">{{ trans('comlink::comlink.no_logs') }}</td></tr>
+            <tr><td colspan="5" class="text-muted">{{ trans('comlink::comlink.no_logs') }}</td></tr>
           @endforelse
         </tbody>
       </table>

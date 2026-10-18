@@ -140,6 +140,8 @@ return [
     'level' => 'Level',
     'driver' => 'Driver',
     'message' => 'Message',
+    'log_user' => 'User',
+    'log_system' => 'System',
     'from' => 'From',
     'to' => 'To',
     'no_logs' => 'No log.',
