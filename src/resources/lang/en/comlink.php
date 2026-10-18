@@ -53,6 +53,24 @@ return [
     'all' => 'All',
     'minutes' => '{1} :count minute|[2,*] :count minutes',
 
+    // identity
+    'status_linked' => 'Linked',
+    'status_unknown' => 'Unknown',
+    'discord_username' => 'Discord username',
+    'discord_id' => 'Discord ID',
+    'identity_help' => 'Link your discord account to get your roles and nickname on the discord servers. You must join the servers by yourself.',
+    'link' => 'Link my discord',
+    'unlink' => 'Unlink',
+    'unlink_confirm' => 'Unlink the discord account :username? Your managed roles will be removed at the next synchronization.',
+    'replace_title' => 'Discord account already linked',
+    'replace_confirm' => 'The discord account :username is already linked to another SeAT user. If you confirm, the previous link will be deleted and the account will be linked to you.',
+    'linked' => 'Discord account linked.',
+    'unlinked' => 'Discord account unlinked. Your managed roles will be removed at the next synchronization.',
+    'link_cancelled' => 'Discord authorization cancelled.',
+    'link_invalid_state' => 'Invalid discord authorization, please try again.',
+    'link_failed' => 'Cannot identify your discord account, please try again later.',
+    'not_configured' => 'The discord bot is not configured yet. Contact an administrator.',
+
     // settings
     'settings_saved' => 'Settings saved.',
     'settings_general' => 'Discord bot',

@@ -35,8 +35,16 @@ Route::group([
     Route::group(['middleware' => 'can:comlink.identity'], function () {
         Route::get('/identity', [IdentityController::class, 'index'])
             ->name('seatcomlink::identity');
+        Route::get('/discord/link', [IdentityController::class, 'link'])
+            ->name('seatcomlink::discord.link');
         Route::get('/discord/callback', [IdentityController::class, 'callback'])
             ->name('seatcomlink::discord.callback');
+        Route::post('/discord/link/confirm', [IdentityController::class, 'confirm'])
+            ->name('seatcomlink::discord.link.confirm');
+        Route::post('/discord/link/cancel', [IdentityController::class, 'cancel'])
+            ->name('seatcomlink::discord.link.cancel');
+        Route::post('/discord/unlink', [IdentityController::class, 'unlink'])
+            ->name('seatcomlink::discord.unlink');
     });
 
     Route::group(['middleware' => 'can:comlink.mappings'], function () {
