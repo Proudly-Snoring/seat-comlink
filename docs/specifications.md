@@ -163,6 +163,5 @@ SeAT has no global retention setting for plugin logs, hence this dedicated setti
 
 * A command imports the users' links from a preinstalled seat-discord-connector (discord ID, username and SeAT user).
 * Links conflicting with an existing link (same SeAT user or same discord ID) are skipped and reported.
-* The bot credentials and the seat-discord-connector policies are not imported:
-  its policies are based on corporation/alliance/title/role filters, which cannot be converted to squads.
+* The bot credentials and the seat-discord-connector policies are not imported: its policies are based on corporation/alliance/title/role filters, which cannot be converted to squads.
   Admins must recreate equivalent squads and mappings.

@@ -58,8 +58,7 @@ Grant them from `Settings > Access Management`. Give `comlink.identity` to the r
 #### Docker installation
 
 In your `seat-docker` directory (ex: `/opt/seat-docker`), add the package to `SEAT_PLUGINS` in the `.env` file (comma separated):
-
-```bash
+```
 SEAT_PLUGINS=proudly-snoring/seat-comlink
 ```
 
@@ -126,8 +125,6 @@ Bare metal: run them as `www-data` from the SeAT directory.
 
 ## Migrating from seat-discord-connector
 
-Both plugins can be installed side by side.
-
 1. Install and configure seat-comlink (you may reuse the same Discord application, adding the new redirect URL).
 2. Run `php artisan comlink:discord:import-warlof --dry-run`, then without `--dry-run`.
 3. Recreate the access rules as squads + mappings (warlof's corporation/alliance/title filters map to squad filters).
@@ -140,15 +137,10 @@ Both plugins can be installed side by side.
 * `Failed to synchronize server ... Missing Access (50001)`: the **Server Members Intent** is not enabled on the bot.
 * Nothing happens: check the bot token in `Comlink > Settings`, then run `php artisan comlink:discord:sync --now` and read `Comlink > Logs`.
 
-## Development
+## Tests
 
+Tests run on Testbench with an in-memory sqlite database and a stateful fake of the Discord API (no network):
 ```bash
 composer update
 vendor/bin/phpunit
 ```
-
-Tests run on Testbench with an in-memory sqlite database and a stateful fake of the Discord API (no network).
-
-## License
-
-GPL-2.0-or-later, like SeAT.
