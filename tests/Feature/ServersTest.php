@@ -33,6 +33,17 @@ class ServersTest extends TestCase
             ->assertSeeInOrder(['name="nickname_format"', e(trans('comlink::comlink.nickname_rules', ['max' => 32])), '{character}'], false);
     }
 
+    public function testServerIcons()
+    {
+        DiscordServer::create(['server_id' => '1', 'name' => 'Alliance'])->forceFill(['icon' => 'abc', 'icon_data' => 'data:image/png;base64,AAAA'])->save();
+        DiscordServer::create(['server_id' => '2', 'name' => 'Corp']);
+
+        $this->actingAs($this->admin)->get(route('seatcomlink::servers'))
+            ->assertOk()
+            ->assertSeeInOrder(['<img src="data:image/png;base64,AAAA"', 'Alliance', '<i class="fab fa-discord"></i>', 'Corp'], false)
+            ->assertDontSee('cdn.discordapp.com');
+    }
+
     public function testNoServer()
     {
         $this->actingAs($this->admin)->get(route('seatcomlink::servers'))

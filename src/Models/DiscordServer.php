@@ -30,7 +30,8 @@ use Seat\Services\Models\ExtensibleModel;
  * @property int $id
  * @property string $server_id
  * @property string $name
- * @property string|null $icon
+ * @property string|null $icon  discord icon hash
+ * @property string|null $icon_data  downloaded icon, as a data URI
  * @property string|null $owner_id
  * @property bool $enforce_nickname
  * @property bool $enforce_roles
@@ -82,14 +83,4 @@ class DiscordServer extends ExtensibleModel
         return $query->where('present', true);
     }
 
-    /**
-     * @return string|null
-     */
-    public function getIconUrlAttribute(): ?string
-    {
-        if (empty($this->icon))
-            return null;
-
-        return sprintf('https://cdn.discordapp.com/icons/%s/%s.png?size=64', $this->server_id, $this->icon);
-    }
 }

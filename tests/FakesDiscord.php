@@ -19,6 +19,13 @@ trait FakesDiscord
     protected string $fake_bot_id = '900';
 
     /**
+     * @var array  [guild id => icon hash]
+     */
+    protected array $fake_icons = [];
+
+    protected int $fake_icon_downloads = 0;
+
+    /**
      * @param  array  $roles  [id => [name, position, managed?]]
      * @param  array  $members  [user id => [username, nick, roles[], bot?]]
      */
@@ -64,6 +71,16 @@ trait FakesDiscord
     protected function installDiscordFake(): void
     {
         Http::fake(function (Request $request) {
+            if (parse_url($request->url(), PHP_URL_HOST) === 'cdn.discordapp.com') {
+                $this->fake_icon_downloads++;
+                $path = parse_url($request->url(), PHP_URL_PATH);
+
+                if (isset($this->fake_failures['GET ' . $path]))
+                    return Http::response('', $this->fake_failures['GET ' . $path][0]);
+
+                return Http::response('png:' . $path, 200, ['Content-Type' => 'image/png']);
+            }
+
             $path = substr(parse_url($request->url(), PHP_URL_PATH), strlen('/api/v10'));
             $method = $request->method();
             $key = $method . ' ' . $path;
@@ -82,7 +99,7 @@ trait FakesDiscord
 
             if ($path === '/users/@me/guilds') {
                 return Http::response(collect($this->fake_guilds)
-                    ->map(fn ($guild, $id) => ['id' => (string) $id, 'name' => $guild['name'], 'icon' => null])->values()->all());
+                    ->map(fn ($guild, $id) => ['id' => (string) $id, 'name' => $guild['name'], 'icon' => $this->fake_icons[$id] ?? null])->values()->all());
             }
 
             if (! preg_match('#^/guilds/(\d+)(?:/(roles|members)(?:/(\d+)(?:/roles/(\d+))?)?)?$#', $path, $m))
@@ -97,7 +114,7 @@ trait FakesDiscord
                 return Http::response(['message' => 'Unknown Guild', 'code' => 10004], 404);
 
             if ($section === '')
-                return Http::response(['id' => $guild, 'name' => $this->fake_guilds[$guild]['name'], 'icon' => null, 'owner_id' => $this->fake_guilds[$guild]['owner_id']]);
+                return Http::response(['id' => $guild, 'name' => $this->fake_guilds[$guild]['name'], 'icon' => $this->fake_icons[$guild] ?? null, 'owner_id' => $this->fake_guilds[$guild]['owner_id']]);
 
             if ($section === 'roles')
                 return Http::response($this->fake_guilds[$guild]['roles']);

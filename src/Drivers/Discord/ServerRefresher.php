@@ -67,13 +67,13 @@ class ServerRefresher
 
             $server->fill([
                 'name' => $guild['name'],
-                'icon' => $guild['icon'] ?? null,
                 'present' => true,
             ]);
 
             if (! $server->exists)
                 $server->nickname_format = config('comlink.config.defaults.nickname_format');
 
+            $this->updateIcon($server, $guild['icon'] ?? null);
             $server->save();
 
             if ($invited)
@@ -132,14 +132,38 @@ class ServerRefresher
         $bot = $this->client->member($server->server_id, $this->botId());
         $bot_top = collect($bot['roles'] ?? [])->map(fn ($id) => (int) ($roles[$id]['position'] ?? 0))->max() ?? 0;
 
+        // icon handled by discover() only: downloaded (or retried) once per synchronization
         $server->fill([
             'name' => $guild['name'] ?? $server->name,
-            'icon' => $guild['icon'] ?? null,
             'owner_id' => isset($guild['owner_id']) ? (string) $guild['owner_id'] : null,
             'bot_top_position' => $bot_top,
         ])->save();
 
         return DiscordRole::where('server_id', $server->server_id)->get()->keyBy('role_id');
+    }
+
+    /**
+     * Download the server icon when it changed (or a previous download failed). Failures never break the sync.
+     *
+     * @param  \ProudlySnoring\Seat\Comlink\Models\DiscordServer  $server
+     * @param  string|null  $hash
+     */
+    private function updateIcon(DiscordServer $server, ?string $hash): void
+    {
+        if ($hash === $server->icon && (is_null($hash) || ! empty($server->icon_data)))
+            return;
+
+        $server->icon = $hash;
+        $server->icon_data = null;
+
+        if (is_null($hash))
+            return;
+
+        try {
+            $server->icon_data = 'data:image/png;base64,' . base64_encode($this->client->icon($server->server_id, $hash));
+        } catch (DiscordException $e) {
+            ComlinkLogger::warning(sprintf('Unable to download the icon of server %s: %s', $server->name, $e->getMessage()));
+        }
     }
 
     /**

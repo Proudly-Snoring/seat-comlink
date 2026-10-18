@@ -11,8 +11,10 @@
         {{ csrf_field() }}
         <div class="card-header">
           <h3 class="card-title">
-            @if($server->icon_url)
-              <img src="{{ $server->icon_url }}" class="img-circle" width="24" height="24" alt="">
+            @if($server->icon_data)
+              <img src="{{ $server->icon_data }}" class="img-circle" width="24" height="24" alt="">
+            @else
+              <i class="fab fa-discord"></i>
             @endif
             {{ $server->name }}
             <small class="text-muted">({{ $server->server_id }})</small>
