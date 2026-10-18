@@ -180,7 +180,7 @@ class SyncTest extends TestCase
 
     public function testNicknameFormatIsAppliedAndNormalized()
     {
-        DiscordServer::first()->update(['enforce_roles' => false, 'nickname_format' => '  {main_name}   of {corp_name} {alliance_ticker}']);
+        DiscordServer::first()->update(['enforce_roles' => false, 'nickname_format' => '  {character}   of {corp_name} {alliance_ticker}']);
 
         $this->sync();
 

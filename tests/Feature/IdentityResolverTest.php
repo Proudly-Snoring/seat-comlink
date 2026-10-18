@@ -17,7 +17,7 @@ class IdentityResolverTest extends TestCase
         ]);
 
         $this->assertSame([
-            'main_name' => 'Main Pilot',
+            'character' => 'Main Pilot',
             'corp_ticker' => 'PILOT',
             'corp_name' => 'Pilots Inc',
             'alliance_ticker' => 'BIGA',
@@ -32,7 +32,7 @@ class IdentityResolverTest extends TestCase
 
         $values = (new IdentityResolver())->forUser($user->id);
 
-        $this->assertSame('First', $values['main_name']);
+        $this->assertSame('First', $values['character']);
         $this->assertSame('CA', $values['corp_ticker']);
         $this->assertNull($values['alliance_ticker']);
     }
@@ -43,7 +43,7 @@ class IdentityResolverTest extends TestCase
         DB::table('users')->where('id', $user->id)->update(['main_character_id' => 999]);
         $this->addCharacter($user, ['id' => 1004, 'name' => 'Linked']);
 
-        $this->assertSame('Linked', (new IdentityResolver())->forUser($user->id)['main_name']);
+        $this->assertSame('Linked', (new IdentityResolver())->forUser($user->id)['character']);
     }
 
     public function testUserWithoutCharacter()

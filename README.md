@@ -21,11 +21,11 @@ Every action is recorded in `Comlink > Logs`.
 
 ### Nickname format
 
-The format is defined per server. Default: `[{corp_ticker}] {main_name}`.
+The format is defined per server. Default: `[{corp_ticker}] {character}`.
 
 | Token               | Value                                            |
 | ------------------- | ------------------------------------------------ |
-| `{main_name}`       | Main character name (first character if no main) |
+| `{character}`       | Main character name (first character if no main) |
 | `{corp_ticker}`     | Main character's corporation ticker              |
 | `{corp_name}`       | Main character's corporation name                |
 | `{alliance_ticker}` | Main character's alliance ticker                 |

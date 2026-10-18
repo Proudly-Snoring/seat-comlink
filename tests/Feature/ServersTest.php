@@ -30,7 +30,7 @@ class ServersTest extends TestCase
             ->assertSeeInOrder(['Alliance', '2026-10-18 14:05:09', 'Corp', trans('comlink::comlink.never')])
             ->assertSee('<span class="comlink-preview">[PILOT] Admin Pilot</span>', false)
             // naming rules between the input and the tokens
-            ->assertSeeInOrder(['name="nickname_format"', e(trans('comlink::comlink.nickname_rules', ['max' => 32])), '{main_name}'], false);
+            ->assertSeeInOrder(['name="nickname_format"', e(trans('comlink::comlink.nickname_rules', ['max' => 32])), '{character}'], false);
     }
 
     public function testNoServer()
@@ -46,13 +46,13 @@ class ServersTest extends TestCase
         $this->actingAs($this->admin)->post(route('seatcomlink::servers.update', $server), [
             'enforce_nickname' => '1',
             'enforce_roles' => '0',
-            'nickname_format' => '{main_name} ({corp_ticker})',
+            'nickname_format' => '{character} ({corp_ticker})',
         ])->assertRedirect(route('seatcomlink::servers'));
 
         $server->refresh();
         $this->assertTrue($server->enforce_nickname);
         $this->assertFalse($server->enforce_roles);
-        $this->assertSame('{main_name} ({corp_ticker})', $server->nickname_format);
+        $this->assertSame('{character} ({corp_ticker})', $server->nickname_format);
         $this->assertSame(1, ComlinkLog::where('message', 'Updated discord settings')->count());
 
         $this->actingAs($this->admin)->post(route('seatcomlink::servers.update', $server), [
@@ -71,7 +71,7 @@ class ServersTest extends TestCase
     public function testPreview()
     {
         $this->actingAs($this->admin)
-            ->getJson(route('seatcomlink::servers.preview', ['format' => '{alliance_ticker} | {main_name}']))
+            ->getJson(route('seatcomlink::servers.preview', ['format' => '{alliance_ticker} | {character}']))
             ->assertExactJson(['nickname' => '- | Admin Pilot']);
     }
 }

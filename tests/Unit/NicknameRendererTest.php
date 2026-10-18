@@ -14,18 +14,18 @@ class NicknameRendererTest extends TestCase
 
     public function testTokensAreReplaced()
     {
-        $values = ['main_name' => 'John Doe', 'corp_ticker' => 'CORP', 'corp_name' => 'My Corp', 'alliance_ticker' => 'ALLY'];
+        $values = ['character' => 'John Doe', 'corp_ticker' => 'CORP', 'corp_name' => 'My Corp', 'alliance_ticker' => 'ALLY'];
 
-        $this->assertSame('[CORP] John Doe', $this->render('[{corp_ticker}] {main_name}', $values));
+        $this->assertSame('[CORP] John Doe', $this->render('[{corp_ticker}] {character}', $values));
         $this->assertSame('ALLY/My Corp', $this->render('{alliance_ticker}/{corp_name}', $values));
-        $this->assertSame('{unknown} John Doe', $this->render('{unknown} {main_name}', $values));
+        $this->assertSame('{unknown} John Doe', $this->render('{unknown} {character}', $values));
     }
 
     public function testMissingValuesAreDashed()
     {
-        $this->assertSame('[-] -', $this->render('[{corp_ticker}] {main_name}', []));
-        $this->assertSame('[CORP] - John', $this->render('[{corp_ticker}] {alliance_ticker} {main_name}',
-            ['main_name' => 'John', 'corp_ticker' => 'CORP', 'alliance_ticker' => '']));
+        $this->assertSame('[-] -', $this->render('[{corp_ticker}] {character}', []));
+        $this->assertSame('[CORP] - John', $this->render('[{corp_ticker}] {alliance_ticker} {character}',
+            ['character' => 'John', 'corp_ticker' => 'CORP', 'alliance_ticker' => '']));
     }
 
     public function testWhitespacesAreCollapsed()

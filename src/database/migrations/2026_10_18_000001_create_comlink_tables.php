@@ -50,7 +50,7 @@ return new class extends Migration
             $table->string('owner_id', 32)->nullable();
             $table->boolean('enforce_nickname')->default(true);
             $table->boolean('enforce_roles')->default(true);
-            $table->string('nickname_format')->default('[{corp_ticker}] {main_name}');
+            $table->string('nickname_format')->default('[{corp_ticker}] {character}');
             $table->integer('bot_top_position')->default(0);
             $table->boolean('present')->default(true);
             $table->timestamp('last_synced_at')->nullable();

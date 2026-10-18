@@ -27,7 +27,7 @@ namespace ProudlySnoring\Seat\Comlink\Drivers\Discord;
  */
 class NicknameRenderer
 {
-    const TOKENS = ['main_name', 'corp_ticker', 'corp_name', 'alliance_ticker'];
+    const TOKENS = ['character', 'corp_ticker', 'corp_name', 'alliance_ticker'];
 
     const MAX_LENGTH = 32;
 
@@ -45,7 +45,7 @@ class NicknameRenderer
         '\x{200E}\x{200F}\x{202A}-\x{202E}\x{2060}-\x{2064}\x{2066}-\x{206F}\x{2800}\x{3164}\x{FEFF}\x{FFA0}]/u';
 
     /**
-     * @param  string  $format  ex: [{corp_ticker}] {main_name}
+     * @param  string  $format  ex: [{corp_ticker}] {character}
      * @param  array  $values  token => value
      * @return string
      */

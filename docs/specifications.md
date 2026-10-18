@@ -7,7 +7,7 @@
 * Users link their discord account with their SeAT account.
     * A command to import data from a preinstalled [seat-discord-connector](https://github.com/warlof/seat-discord-connector) is also provided.
 * The plugin regularly enforce registered users' nickname and roles:
-    * It enforce the user's nickname based on a format defined in configuration (ex: `[{corp_ticker}] {main_name}`).
+    * It enforce the user's nickname based on a format defined in configuration (ex: `[{corp_ticker}] {character}`).
     * It adds or removes the managed discord roles to each registered user (when needed).
     * It removes the managed discord roles from any user that is not registered on SeAT.
     * Only the discord roles defined in the SeAT are managed. Other roles are untouched.
@@ -45,11 +45,11 @@
 
 * The nickname is built from a "selected character": the user's main character or, if none, the first character linked to their SeAT account.
 * The nickname format accepts the following tokens:
-    * `{main_name}`: the name of the selected character,
+    * `{character}`: the name of the selected character,
     * `{corp_ticker}`: the ticker of the selected character's corporation,
     * `{corp_name}`: the name of the selected character's corporation,
     * `{alliance_ticker}`: the ticker of the selected character's alliance.
-* Default format: `[{corp_ticker}] {main_name}`.
+* Default format: `[{corp_ticker}] {character}`.
 * Any token without a value (ex: no alliance, no character) is replaced by a single dash (`-`).
 * Discord naming rules for nicknames:
     * 1 to 32 characters,
@@ -93,9 +93,9 @@ All views are grouped in a "Comlink" sidebar menu.
         * The datetime of the last synchronization (or "never"),
         * A "Enforce nickname" checkbox - If checked (default), the bot enforce the discord nicknames for this server, else it doesn't touch it.
         * A "Enforce roles" checkbox - If checked (default), the bot enforce the discord roles for this server, else it doesn't touch it.
-        * The nickname format (if "Enforce nickname" is checked) - default is `[{corp_ticker}] {main_name}`:
+        * The nickname format (if "Enforce nickname" is checked) - default is `[{corp_ticker}] {character}`:
             * its label includes a live preview for the current admin (ex: "Nickname format - ex: [PR.SN] Ryanis"),
-            * below the input, the naming rules information (see Nicknames), then the available tokens.
+            * below the input, the naming rules (see Nicknames), then the available tokens, each in its own information block.
         * A "Save" button in the card footer, on the right.
     * Intended for admins only (configurable from the standard SeAT roles management).
 * Comlink/Settings

@@ -27,7 +27,7 @@
               <dd><code>{{ $discord->discord_id }}</code></dd>
             </dl>
           @else
-            <p class="mb-0">{{ trans('comlink::comlink.identity_help') }}</p>
+            <p class="mb-0">{{ trans('comlink::comlink.identity_help') }}<br>{{ trans('comlink::comlink.identity_help_join') }}</p>
           @endif
         </div>
         <div class="card-footer">

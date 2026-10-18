@@ -87,7 +87,7 @@ class ServerSynchronizer
 
             $discord_id = (string) $member['user']['id'];
             $user_id = $links->get($discord_id);
-            $label = $user_id ? ($this->values[$user_id]['main_name'] ?? $member['user']['username']) : $member['user']['username'];
+            $label = $user_id ? ($this->values[$user_id]['character'] ?? $member['user']['username']) : $member['user']['username'];
 
             if ($server->enforce_roles)
                 $this->syncRoles($member, $user_id, $label);

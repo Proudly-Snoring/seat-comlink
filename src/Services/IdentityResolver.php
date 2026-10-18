@@ -32,7 +32,7 @@ class IdentityResolver
 {
     /**
      * @param  int[]  $user_ids
-     * @return array<int, array{main_name: ?string, corp_ticker: ?string, corp_name: ?string, alliance_ticker: ?string}>
+     * @return array<int, array{character: ?string, corp_ticker: ?string, corp_name: ?string, alliance_ticker: ?string}>
      */
     public function forUsers(array $user_ids): array
     {
@@ -90,7 +90,7 @@ class IdentityResolver
             $corporation = $affiliation ? $corporations->get($affiliation->corporation_id) : null;
 
             $result[$user_id] = [
-                'main_name' => $names->get($character_id),
+                'character' => $names->get($character_id),
                 'corp_ticker' => $corporation->ticker ?? null,
                 'corp_name' => $corporation->name ?? null,
                 'alliance_ticker' => $affiliation && $affiliation->alliance_id ? $alliances->get($affiliation->alliance_id) : null,
@@ -114,6 +114,6 @@ class IdentityResolver
      */
     public static function empty(): array
     {
-        return ['main_name' => null, 'corp_ticker' => null, 'corp_name' => null, 'alliance_ticker' => null];
+        return ['character' => null, 'corp_ticker' => null, 'corp_name' => null, 'alliance_ticker' => null];
     }
 }

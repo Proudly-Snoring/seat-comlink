@@ -47,12 +47,14 @@
             <div class="callout callout-info py-2 my-2">
               <small><i class="fas fa-info-circle"></i> {{ trans('comlink::comlink.nickname_rules', ['max' => $max_length]) }}</small>
             </div>
-            <small class="form-text text-muted">
-              {{ trans('comlink::comlink.nickname_tokens') }}
-              @foreach($tokens as $token)
-                <code>{{ '{' . $token . '}' }}</code>
-              @endforeach
-            </small>
+            <div class="callout callout-info py-2 mb-0">
+              <small>
+                <i class="fas fa-info-circle"></i> {{ trans('comlink::comlink.nickname_tokens') }}
+                @foreach($tokens as $token)
+                  <code>{{ '{' . $token . '}' }}</code>
+                @endforeach
+              </small>
+            </div>
           </div>
         </div>
         <div class="card-footer">

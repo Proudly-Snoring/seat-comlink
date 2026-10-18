@@ -54,7 +54,7 @@ class UsersController extends Controller
             ->paginate(50)->withQueryString();
 
         // main character names (first linked character if no main)
-        $names = collect($resolver->forUsers($users->pluck('user_id')->all()))->map(fn ($values) => $values['main_name']);
+        $names = collect($resolver->forUsers($users->pluck('user_id')->all()))->map(fn ($values) => $values['character']);
 
         return view('comlink::users.index', compact('users', 'search', 'names'));
     }

@@ -32,7 +32,7 @@ return [
     'defaults' => [
         'sync_rate' => 5,
         'log_retention' => 30,
-        'nickname_format' => '[{corp_ticker}] {main_name}',
+        'nickname_format' => '[{corp_ticker}] {character}',
     ],
     'queue' => 'default',
 ];
