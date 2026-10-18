@@ -40,4 +40,9 @@ return [
     'permission_logs_description' => 'Read the plugin logs.',
     'permission_users_label' => 'Users',
     'permission_users_description' => 'List the linked users and their discord state.',
+
+    // roles
+    'role_reason_everyone' => 'The @everyone role cannot be assigned.',
+    'role_reason_integration' => 'Managed by an integration (bot or subscription).',
+    'role_reason_hierarchy' => 'Above the bot\'s highest role: move the bot\'s role up on discord.',
 ];
