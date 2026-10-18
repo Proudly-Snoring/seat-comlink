@@ -24,8 +24,10 @@ namespace ProudlySnoring\Seat\Comlink;
 
 use ProudlySnoring\Seat\Comlink\Commands\PruneLogs;
 use ProudlySnoring\Seat\Comlink\Database\Seeders\ComlinkScheduleSeeder;
+use ProudlySnoring\Seat\Comlink\Drivers\Discord\DiscordClient;
 use ProudlySnoring\Seat\Comlink\Observers\SquadObserver;
 use ProudlySnoring\Seat\Comlink\Observers\UserObserver;
+use ProudlySnoring\Seat\Comlink\Services\ComlinkSettings;
 use Seat\Services\AbstractSeatPlugin;
 use Seat\Web\Models\Squads\Squad;
 use Seat\Web\Models\User;
@@ -72,6 +74,11 @@ class ComlinkServiceProvider extends AbstractSeatPlugin
         $this->mergeConfigFrom(__DIR__ . '/Config/package.sidebar.php', 'package.sidebar');
         $this->registerPermissions(__DIR__ . '/Config/Permissions/comlink.php', 'comlink');
         $this->registerDatabaseSeeders(ComlinkScheduleSeeder::class);
+
+        // not a singleton: the token may change between two calls (settings update)
+        $this->app->bind(DiscordClient::class, function () {
+            return new DiscordClient(ComlinkSettings::botToken());
+        });
     }
 
     /**
