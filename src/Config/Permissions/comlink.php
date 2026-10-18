@@ -28,26 +28,21 @@ return [
     'mappings' => [
         'label' => 'comlink::comlink.permission_mappings_label',
         'description' => 'comlink::comlink.permission_mappings_description',
-        'division' => 'military',
     ],
     'servers' => [
         'label' => 'comlink::comlink.permission_servers_label',
         'description' => 'comlink::comlink.permission_servers_description',
-        'division' => 'military',
     ],
     'settings' => [
         'label' => 'comlink::comlink.permission_settings_label',
         'description' => 'comlink::comlink.permission_settings_description',
-        'division' => 'military',
     ],
     'logs' => [
         'label' => 'comlink::comlink.permission_logs_label',
         'description' => 'comlink::comlink.permission_logs_description',
-        'division' => 'military',
     ],
     'users' => [
         'label' => 'comlink::comlink.permission_users_label',
         'description' => 'comlink::comlink.permission_users_description',
-        'division' => 'military',
     ],
 ];
