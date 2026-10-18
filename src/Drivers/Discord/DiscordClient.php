@@ -121,6 +121,31 @@ class DiscordClient
     }
 
     /**
+     * Download a server icon from the CDN (public, no bot token).
+     *
+     * @param  string  $guild_id
+     * @param  string  $hash
+     * @return string  PNG binary
+     *
+     * @throws \ProudlySnoring\Seat\Comlink\Drivers\Discord\DiscordException
+     */
+    public function icon(string $guild_id, string $hash): string
+    {
+        $url = sprintf('%s/icons/%s/%s.png?size=64', config('comlink.config.discord.cdn'), $guild_id, $hash);
+
+        try {
+            $response = Http::withHeaders(['User-Agent' => self::USER_AGENT])->timeout(5)->get($url);
+        } catch (ConnectionException $e) {
+            throw new DiscordException($e->getMessage(), 0, null, $e);
+        }
+
+        if ($response->failed())
+            throw new DiscordException(sprintf('HTTP %d', $response->status()), $response->status());
+
+        return $response->body();
+    }
+
+    /**
      * @param  string  $guild_id
      * @return array
      */

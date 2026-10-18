@@ -187,6 +187,60 @@ class MappingsTest extends TestCase
         $this->assertSame([], $this->fake_writes);
     }
 
+    public function testServerIconsAreDownloaded()
+    {
+        ComlinkSettings::setCredentials('1', 'secret', 'token');
+        $this->addFakeGuild('100', 'Alliance');
+        $this->addFakeGuild('300', 'No icon');
+        $this->fake_icons['100'] = 'abc';
+        $this->installDiscordFake();
+
+        $this->actingAs($this->admin)->post(route('seatcomlink::mappings.import'))->assertSessionHas('success');
+
+        $server = DiscordServer::where('server_id', '100')->sole();
+        $this->assertSame('abc', $server->icon);
+        $this->assertSame('data:image/png;base64,' . base64_encode('png:/icons/100/abc.png'), $server->icon_data);
+        $this->assertNull(DiscordServer::where('server_id', '300')->value('icon_data'));
+        $this->assertSame(1, $this->fake_icon_downloads);
+
+        // unchanged: cached
+        $this->actingAs($this->admin)->post(route('seatcomlink::mappings.import'));
+        $this->assertSame(1, $this->fake_icon_downloads);
+
+        // changed: downloaded again
+        $this->fake_icons['100'] = 'def';
+        $this->actingAs($this->admin)->post(route('seatcomlink::mappings.import'));
+        $this->assertSame(2, $this->fake_icon_downloads);
+        $this->assertSame('data:image/png;base64,' . base64_encode('png:/icons/100/def.png'), DiscordServer::where('server_id', '100')->value('icon_data'));
+
+        // removed
+        unset($this->fake_icons['100']);
+        $this->actingAs($this->admin)->post(route('seatcomlink::mappings.import'));
+        $server->refresh();
+        $this->assertNull($server->icon);
+        $this->assertNull($server->icon_data);
+    }
+
+    public function testServerIconFailureIsRetried()
+    {
+        ComlinkSettings::setCredentials('1', 'secret', 'token');
+        $this->addFakeGuild('100', 'Alliance');
+        $this->fake_icons['100'] = 'abc';
+        $this->failFake('GET', '/icons/100/abc.png', 500);
+        $this->installDiscordFake();
+
+        $this->actingAs($this->admin)->post(route('seatcomlink::mappings.import'))->assertSessionHas('success');
+
+        $this->assertNull(DiscordServer::where('server_id', '100')->value('icon_data'));
+        $this->assertSame(1, ComlinkLog::where('level', 'warning')
+            ->where('message', 'Unable to download the icon of server Alliance: HTTP 500')->count());
+
+        // retried at each import until it succeeds
+        unset($this->fake_failures['GET /icons/100/abc.png']);
+        $this->actingAs($this->admin)->post(route('seatcomlink::mappings.import'));
+        $this->assertNotNull(DiscordServer::where('server_id', '100')->value('icon_data'));
+    }
+
     public function testImportRolesDetectsRemovedServers()
     {
         ComlinkSettings::setCredentials('1', 'secret', 'token');

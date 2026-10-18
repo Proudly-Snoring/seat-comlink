@@ -23,6 +23,7 @@
 return [
     'discord' => [
         'api' => 'https://discord.com/api/v10',
+        'cdn' => 'https://cdn.discordapp.com',
         'authorize' => 'https://discord.com/oauth2/authorize',
         // Manage Roles (1 << 28) + Manage Nicknames (1 << 27)
         'permissions' => 402653184,
