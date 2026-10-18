@@ -40,9 +40,9 @@ Nicknames follow Discord naming rules: extra whitespaces and zero-width/non-rend
 | `Comlink > Identity`         | Link / unlink one's Discord account        | `comlink.identity` |
 | `Comlink > Discord Mappings` | Squads -> roles mapping, per server        | `comlink.mappings` |
 | `Comlink > Discord Servers`  | Per-server options, nickname format        | `comlink.servers`  |
-| `Comlink > Settings`         | Bot credentials, sync rate, logs retention | `comlink.settings` |
-| `Comlink > Logs`             | Plugin logs                                | `comlink.logs`     |
 | `Comlink > Users`            | Linked users and their Discord state       | `comlink.users`    |
+| `Comlink > Logs`             | Plugin logs                                | `comlink.logs`     |
+| `Comlink > Settings`         | Bot credentials, sync rate, logs retention | `comlink.settings` |
 
 Grant them from `Settings > Access Management`. Give `comlink.identity` to the role(s) of all users who should be able to link their account.
 

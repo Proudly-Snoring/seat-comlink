@@ -23,6 +23,7 @@
 namespace ProudlySnoring\Seat\Comlink\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use ProudlySnoring\Seat\Comlink\Drivers\Discord\DiscordException;
 use ProudlySnoring\Seat\Comlink\Drivers\Discord\ServerRefresher;
 use ProudlySnoring\Seat\Comlink\Http\Validation\MappingRequest;
@@ -66,6 +67,8 @@ class MappingsController extends Controller
             'servers' => $servers,
             'all_servers' => DiscordServer::orderBy('name')->get(),
             'squads' => Squad::withoutGlobalScopes()->orderBy('name')->get(['id', 'name']),
+            'squad_counts' => DB::table('squad_member')->groupBy('squad_id')->select('squad_id', DB::raw('count(*) as total'))
+                ->pluck('total', 'squad_id'),
             'filters' => $filters,
         ]);
     }
@@ -132,6 +135,9 @@ class MappingsController extends Controller
             return redirect()->back()->with('error', trans('comlink::comlink.import_roles_failed', ['reason' => $e->reason()]));
         }
 
+        ComlinkLogger::info(sprintf('Imported discord roles from %d servers', $servers->count()),
+            ['servers' => $servers->pluck('name')->all()]);
+
         return redirect()->back()->with('success', trans_choice('comlink::comlink.import_roles_done', $servers->count(), ['count' => $servers->count()]));
     }
 
@@ -146,6 +152,8 @@ class MappingsController extends Controller
             return redirect()->back()->with('error', trans('comlink::comlink.not_configured'));
 
         DiscoverServers::dispatch();
+
+        ComlinkLogger::info('Requested a manual synchronization of all discord servers');
 
         return redirect()->back()->with('success', trans('comlink::comlink.sync_queued'));
     }

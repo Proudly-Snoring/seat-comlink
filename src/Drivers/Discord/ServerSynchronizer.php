@@ -54,6 +54,11 @@ class ServerSynchronizer
 
     private array $touched_issues = [];
 
+    private array $stats = [];
+
+    // role ID => members holding it
+    private array $role_counts = [];
+
     public function __construct(DiscordClient $client, ServerRefresher $refresher, IdentityResolver $identities, NicknameRenderer $renderer)
     {
         $this->client = $client;
@@ -69,8 +74,11 @@ class ServerSynchronizer
      */
     public function sync(DiscordServer $server): void
     {
+        $started_at = now();
         $this->server = $server;
         $this->touched_issues = [];
+        $this->stats = ['roles_added' => 0, 'roles_removed' => 0, 'nicknames_updated' => 0, 'failures' => 0];
+        $this->role_counts = [];
         $this->roles = $this->refresher->refresh($server);
         $server->refresh();
 
@@ -82,6 +90,9 @@ class ServerSynchronizer
         $seen = [];
 
         foreach ($this->client->members($server->server_id) as $member) {
+            foreach ($member['roles'] ?? [] as $role_id)
+                $this->countRole((string) $role_id, 1);
+
             if ($member['user']['bot'] ?? false)
                 continue;
 
@@ -111,7 +122,27 @@ class ServerSynchronizer
         // resolved (or gone) issues: a new failure will be logged again
         DiscordIssue::where('server_id', $server->server_id)->whereNotIn('id', $this->touched_issues)->delete();
 
-        $server->update(['last_synced_at' => now()]);
+        foreach ($this->roles as $role_id => $role) {
+            $role->member_count = $this->role_counts[(string) $role_id] ?? 0;
+            $role->save();
+        }
+
+        $ended_at = now();
+        $server->update(['last_synced_at' => $ended_at]);
+
+        ComlinkLogger::debug(sprintf('Synchronized server %s: %d updates (%d roles added, %d roles removed, %d nicknames updated, %d failures), started at %s, ended at %s',
+            $server->name, $this->stats['roles_added'] + $this->stats['roles_removed'] + $this->stats['nicknames_updated'],
+            $this->stats['roles_added'], $this->stats['roles_removed'], $this->stats['nicknames_updated'], $this->stats['failures'],
+            $started_at->toDateTimeString(), $ended_at->toDateTimeString()), $this->stats);
+    }
+
+    /**
+     * @param  string  $role_id
+     * @param  int  $delta
+     */
+    private function countRole(string $role_id, int $delta): void
+    {
+        $this->role_counts[$role_id] = max(0, ($this->role_counts[$role_id] ?? 0) + $delta);
     }
 
     /**
@@ -161,6 +192,9 @@ class ServerSynchronizer
             return;
         }
 
+        $this->countRole($role_id, $add ? 1 : -1);
+        $this->stats[$add ? 'roles_added' : 'roles_removed']++;
+
         ComlinkLogger::info(sprintf('%s role %s %s user %s (discord id: %s) on server %s',
             $add ? 'Added' : 'Removed', $role->name, $add ? 'to' : 'from', $label, $discord_id, $this->server->name));
     }
@@ -202,6 +236,8 @@ class ServerSynchronizer
             return $current;
         }
 
+        $this->stats['nicknames_updated']++;
+
         ComlinkLogger::info(sprintf('Updated nickname of user %s (discord id: %s) on server %s to %s',
             $label, $discord_id, $this->server->name, $target));
 
@@ -227,6 +263,7 @@ class ServerSynchronizer
         ]);
 
         $hash = hash('sha256', $reason);
+        $this->stats['failures']++;
 
         if (! $issue->exists || $issue->reason_hash !== $hash) {
             ComlinkLogger::warning(sprintf('Failed to update %s for user %s (discord id: %s) on server %s: %s',

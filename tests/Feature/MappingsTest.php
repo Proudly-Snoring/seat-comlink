@@ -118,10 +118,32 @@ class MappingsTest extends TestCase
             ->assertSee('<td>Corp</td>', false)->assertDontSee('<td>Alliance</td>', false);
 
         $this->actingAs($this->admin)->get(route('seatcomlink::mappings', ['squad' => $this->squad->id]))
-            ->assertSee('<td>Pilots</td>', false)->assertDontSee('<td>Others</td>', false);
+            ->assertSee('<td>Pilots <span', false)->assertDontSee('<td>Others <span', false);
 
         $this->actingAs($this->admin)->get(route('seatcomlink::mappings', ['role' => 'memb']))
-            ->assertSee('<td>Others</td>', false)->assertDontSee('<td>Pilots</td>', false);
+            ->assertSee('<td>Others <span', false)->assertDontSee('<td>Pilots <span', false);
+    }
+
+    public function testSquadAndRoleCounts()
+    {
+        $squad = $this->makeSquad('Pilots squad', [$this->admin, $this->makeUser('pilot')]);
+        DiscordMapping::create($this->mapping(['squad_id' => $squad->id]));
+        DiscordMapping::create($this->mapping(['role_id' => '103']));
+
+        // role 101 seen on 7 members at the last sync, 103 never synced
+        DiscordRole::where('role_id', '101')->update(['member_count' => 7]);
+
+        $this->actingAs($this->admin)->get(route('seatcomlink::mappings'))
+            ->assertSee('Pilots squad <span class="text-muted" title="' . trans('comlink::comlink.squad_count') . '">(2)</span>', false)
+            ->assertSee('<td>Pilots <span class="text-muted" title="' . trans('comlink::comlink.squad_count') . '">(0)</span>', false)
+            ->assertSee('title="' . e(trans('comlink::comlink.role_count')) . '">(7)</span>', false)
+            ->assertSee(trans('comlink::comlink.role_count'), false);
+    }
+
+    public function testButtonsInFooter()
+    {
+        $this->actingAs($this->admin)->get(route('seatcomlink::mappings'))
+            ->assertSeeInOrder(['card-footer', route('seatcomlink::mappings.import'), route('seatcomlink::mappings.sync'), 'comlink-add-mapping'], false);
     }
 
     public function testOrphanBadge()
@@ -154,6 +176,10 @@ class MappingsTest extends TestCase
         $this->assertSame(1, ComlinkLog::where('level', 'error')
             ->where('message', 'Role Pilot deleted from server Alliance renamed, its mappings are now orphan')->count());
         $this->assertSame(1, ComlinkLog::where('message', 'Invited to server New server')->count());
+
+        $log = ComlinkLog::where('message', 'Imported discord roles from 2 servers')->sole();
+        $this->assertSame('info', $log->level);
+        $this->assertSame($this->admin->id, (int) $log->user_id);
 
         // no member was touched
         $this->assertSame([], $this->fake_writes);

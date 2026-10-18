@@ -10,6 +10,7 @@ use ProudlySnoring\Seat\Comlink\Models\ComlinkLog;
 use ProudlySnoring\Seat\Comlink\Models\DiscordIssue;
 use ProudlySnoring\Seat\Comlink\Models\DiscordMapping;
 use ProudlySnoring\Seat\Comlink\Models\DiscordMember;
+use ProudlySnoring\Seat\Comlink\Models\DiscordRole;
 use ProudlySnoring\Seat\Comlink\Models\DiscordServer;
 use ProudlySnoring\Seat\Comlink\Models\DiscordUser;
 use ProudlySnoring\Seat\Comlink\Services\ComlinkSettings;
@@ -114,6 +115,19 @@ class SyncTest extends TestCase
         // sync logs have no origin user
         $this->assertSame(0, ComlinkLog::whereNotNull('user_id')->count());
 
+        // debug summary with counters and times
+        $summary = ComlinkLog::where('level', 'debug')->sole();
+        $this->assertMatchesRegularExpression('/^Synchronized server Alliance: 5 updates \(1 roles added, 3 roles removed, 1 nicknames updated, 3 failures\), '
+            . 'started at \d{4}-\d\d-\d\d \d\d:\d\d:\d\d, ended at \d{4}-\d\d-\d\d \d\d:\d\d:\d\d$/', $summary->message);
+        $this->assertSame(['roles_added' => 1, 'roles_removed' => 3, 'nicknames_updated' => 1, 'failures' => 3], $summary->context);
+
+        // members holding each role, after the updates (bots included)
+        $counts = DiscordRole::pluck('member_count', 'role_id');
+        $this->assertSame(3, $counts['101']);
+        $this->assertSame(1, $counts['102']);
+        $this->assertSame(1, $counts['103']);
+        $this->assertSame(2, $counts['104']);
+
         // linked members only, with their nickname
         $this->assertSame('[PILOT] Alice', DiscordMember::where('discord_id', '11')->value('nickname'));
         $this->assertSame(6, DiscordMember::count());
@@ -131,7 +145,10 @@ class SyncTest extends TestCase
         $this->sync();
 
         $this->assertCount($writes, $this->fake_writes);
-        $this->assertSame($logs, ComlinkLog::count());
+        // only the debug summary
+        $this->assertSame($logs + 1, ComlinkLog::count());
+        $this->assertSame(0, ComlinkLog::where('id', '>', $logs)->where('level', '!=', 'debug')->count());
+        $this->assertStringContainsString('Synchronized server Alliance: 0 updates', ComlinkLog::latest('id')->value('message'));
         $this->assertSame(3, DiscordIssue::count());
     }
 
@@ -284,6 +301,9 @@ class SyncTest extends TestCase
             ->assertSessionHas('success', trans('comlink::comlink.sync_queued'));
 
         Queue::assertPushed(DiscoverServers::class);
+        $log = ComlinkLog::where('message', 'Requested a manual synchronization of all discord servers')->sole();
+        $this->assertSame('info', $log->level);
+        $this->assertSame($admin->id, (int) $log->user_id);
 
         ComlinkSettings::setCredentials(null, null, null);
         $this->actingAs($admin)->post(route('seatcomlink::mappings.sync'))->assertSessionHas('error');

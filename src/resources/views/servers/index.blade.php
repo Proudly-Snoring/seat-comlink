@@ -57,8 +57,8 @@
             </div>
           </div>
         </div>
-        <div class="card-footer">
-          <button type="submit" class="btn btn-primary float-right">{{ trans('comlink::comlink.save') }}</button>
+        <div class="card-footer text-right">
+          <button type="submit" class="btn btn-primary">{{ trans('comlink::comlink.save') }}</button>
         </div>
       </form>
     </div>

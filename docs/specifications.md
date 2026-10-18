@@ -37,7 +37,7 @@
     * One SeAT user is linked to at most one discord account, and one discord account to at most one SeAT user.
     * If the discord account is already linked to another SeAT user, a confirmation box explains that the previous link will be deleted.
       On confirmation, the old link is deleted and the new one is recorded. On cancellation, nothing changes.
-    * Unlinking requires a confirmation box warning that the managed roles will be removed at the next synchronization.
+    * Unlinking requires a confirmation box asking to unlink the account, then on a second line, with a warning icon, that the managed roles will be removed at the next synchronization.
       The roles are removed at the next synchronization (not immediately).
 * Deleting a SeAT user deletes their discord link. Deleting a SeAT squad deletes its mappings (logged as a mapping removal).
 
@@ -62,30 +62,32 @@
 
 ## Views
 
-All views are grouped in a "Comlink" sidebar menu.
+All views are grouped in a "Comlink" sidebar menu, in this order: Identity, Discord Mappings, Discord Servers, Users, Logs, Settings.
 
 * Comlink/Identity
     * Displays a discord card with:
         * The "Discord" title with discord icon,
         * A "status" badge ("Linked" green if  user's ID is known / "Unknown" red else),
-        * The connected user's username and ID on discord (if already known),
+        * The connected user's username and ID on discord (if already known), each label and value on the same line,
         * The "link my discord" button if user's ID is not already known.
-        * A "unlink" button if user's ID is known (with a confirmation box, see Linking rules).
+        * A "unlink" button, on the right of the card footer, if user's ID is known (with a confirmation box, see Linking rules).
     * May display other cards for other VOIP services (called "drivers") in the future.
     * Intended for all users (configurable from the standard SeAT roles management).
 * Comlink/Discord Mappings
     * Displays a table of roles mapping with the following columns:
         * Discord server name,
-        * Squad name,
-        * Role name (with an "orphan" badge if the role has been deleted on discord),
+        * Squad name, followed by its number of SeAT accounts in parenthesis,
+        * Role name, followed by the number of discord accounts holding it at the last synchronization in parenthesis
+          (with an "orphan" badge if the role has been deleted on discord),
         * An "Edit" button,
         * A "Delete" button.
     * The table must be filterable by discord server, squad name and role name.
-    * An "Add mapping" button allows to add more rows.
+    * The card footer holds the following buttons: "Import roles now" and "Sync now" on the left, "Add mapping" on the right.
+    * The "Add mapping" button allows to add more rows.
         * The server, squad and role are picked from lists (roles as known at the last synchronization).
         * Roles that the bot cannot manage (above the bot's role, or managed by an integration) are displayed but not selectable, with the reason.
-    * An "Import roles now" button refreshes the servers and roles lists from discord immediately (without waiting for the next synchronization).
-    * A "Sync now" button forces the synchronization of all the discord servers now (queued, runs in background).
+    * The "Import roles now" button refreshes the servers and roles lists from discord immediately (without waiting for the next synchronization).
+    * The "Sync now" button forces the synchronization of all the discord servers now (queued, runs in background).
     * Intended for admins only (configurable from the standard SeAT roles management).
 * Comlink/Discord Servers
     * The list of discord servers where the bot is currently present, one card for each with:
@@ -97,6 +99,23 @@ All views are grouped in a "Comlink" sidebar menu.
             * its label includes a live preview for the current admin (ex: "Nickname format - ex: [PR.SN] Ryanis"),
             * below the input, the naming rules (see Nicknames), then the available tokens, each in its own information block.
         * A "Save" button in the card footer, on the right.
+    * Intended for admins only (configurable from the standard SeAT roles management).
+* Comlink/Users
+    * Displays a table of known discord users with the following columns:
+        * The SeAT user ID,
+        * The user's name (SeAT main character),
+        * The discord ID,
+        * The discord username,
+        * The discord servers where the user is present (as seen at the last synchronization),
+          each with the nickname enforced on this server (the format is defined per server).
+    * Intended for admins only (configurable from the standard SeAT roles management).
+* Comlink/Logs
+    * The plugin logs in table format, sorted from newer to older with pagination and the following columns:
+        * Datetime of the log,
+        * Log level (debug/info/warning/error),
+        * The driver name (only "discord" for now),
+        * The actual log message (plain text).
+    * The table must be filterable by log level, driver name, and date range (two date inputs explicitly labelled "From" and "To").
     * Intended for admins only (configurable from the standard SeAT roles management).
 * Comlink/Settings
     * The plugin settings with:
@@ -113,23 +132,6 @@ All views are grouped in a "Comlink" sidebar menu.
         * The rate of the synchronization, picked from a list: 1, 2, 3, 4, 5 (default), 6, 10, 12, 15, 20, 30 or 60 minutes,
         * The logs retention (in days, default 30).
     * Intended for admins only (configurable from the standard SeAT roles management).
-* Comlink/Logs
-    * The plugin logs in table format, sorted from newer to older with pagination and the following columns:
-        * Datetime of the log,
-        * Log level (debug/info/warning/error),
-        * The driver name (only "discord" for now),
-        * The actual log message (plain text).
-    * The table must be filterable by log level, driver name, and date range (two date inputs explicitly labelled "From" and "To").
-    * Intended for admins only (configurable from the standard SeAT roles management).
-* Comlink/Users
-    * Displays a table of known discord users with the following columns:
-        * The SeAT user ID,
-        * The user's name (SeAT main character),
-        * The discord ID,
-        * The discord username,
-        * The discord servers where the user is present (as seen at the last synchronization),
-          each with the nickname enforced on this server (the format is defined per server).
-    * Intended for admins only (configurable from the standard SeAT roles management).
 
 Each view must have a corresponding entry in the SeAT Access Management configuration.
 
@@ -137,6 +139,10 @@ Each view must have a corresponding entry in the SeAT Access Management configur
 
 * When an admin changes a mapping: `Added/edited/removed mapping SQUAD_NAME -> ROLE_NAME for discord server SERVER_NAME` (level info).
 * When an admin changes the settings: `Updated discord settings` (level info).
+* When an admin clicks on "Import roles now": `Imported discord roles from N servers` (level info).
+* When an admin clicks on "Sync now": `Requested a manual synchronization of all discord servers` (level info).
+* When a role is added/removed or a nickname is updated: `Added/Removed role ROLE_NAME to/from user ...` / `Updated nickname of user ... to NICKNAME` (level info).
+* At the end of each server synchronization: `Synchronized server DISCORD_SERVER: N updates (A roles added, R roles removed, K nicknames updated, F failures), started at START, ended at END` (level debug).
 * When a user links/unlinks : `Linked/Unlinked discord account DISCORD_ID with user USER_ID` (level info).
 * When a link replaces a previous one: `Unlinked discord account DISCORD_ID from user OLD_USER_ID` (level info), followed by the link log.
 * When the bot is added/removed to/from a discord server: `Invited/Removed to/from server DISCORD_SERVER` (level info).

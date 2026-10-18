@@ -8,25 +8,6 @@
   <div class="card">
     <div class="card-header">
       <h3 class="card-title">{{ trans('comlink::comlink.menu_mappings') }}</h3>
-      <div class="card-tools">
-        <div class="input-group input-group-sm">
-          <form method="post" action="{{ route('seatcomlink::mappings.import') }}">
-            {{ csrf_field() }}
-            <button type="submit" class="btn btn-sm btn-default">
-              <i class="fas fa-download"></i> {{ trans('comlink::comlink.import_roles') }}
-            </button>
-          </form>
-          <form method="post" action="{{ route('seatcomlink::mappings.sync') }}" class="ml-1">
-            {{ csrf_field() }}
-            <button type="submit" class="btn btn-sm btn-default" title="{{ trans('comlink::comlink.sync_now_help') }}">
-              <i class="fas fa-sync"></i> {{ trans('comlink::comlink.sync_now') }}
-            </button>
-          </form>
-          <button type="button" class="btn btn-sm btn-success ml-1" id="comlink-add-mapping" @disabled($servers->isEmpty())>
-            <i class="fas fa-plus"></i> {{ trans('comlink::comlink.add_mapping') }}
-          </button>
-        </div>
-      </div>
     </div>
     <div class="card-body">
 
@@ -70,10 +51,13 @@
           @forelse($mappings as $mapping)
             <tr>
               <td>{{ $mapping->server_name }}</td>
-              <td>{{ $mapping->squad_name }}</td>
+              <td>{{ $mapping->squad_name }} <span class="text-muted" title="{{ trans('comlink::comlink.squad_count') }}">({{ $squad_counts[$mapping->squad_id] ?? 0 }})</span></td>
               <td>
                 <span style="color: {{ $mapping->role->hex_color ?? '#99aab5' }}">&#9679;</span>
                 {{ $mapping->role_name }}
+                @if(! is_null($mapping->role?->member_count))
+                  <span class="text-muted" title="{{ trans('comlink::comlink.role_count') }}">({{ $mapping->role->member_count }})</span>
+                @endif
                 @if(! $mapping->role || $mapping->role->isOrphan())
                   <span class="badge badge-danger" title="{{ trans('comlink::comlink.orphan_help') }}">{{ trans('comlink::comlink.orphan') }}</span>
                 @endif
@@ -98,6 +82,23 @@
       </table>
 
       {{ $mappings->links() }}
+    </div>
+    <div class="card-footer d-flex">
+      <form method="post" action="{{ route('seatcomlink::mappings.import') }}">
+        {{ csrf_field() }}
+        <button type="submit" class="btn btn-default">
+          <i class="fas fa-download"></i> {{ trans('comlink::comlink.import_roles') }}
+        </button>
+      </form>
+      <form method="post" action="{{ route('seatcomlink::mappings.sync') }}" class="ml-2">
+        {{ csrf_field() }}
+        <button type="submit" class="btn btn-default" title="{{ trans('comlink::comlink.sync_now_help') }}">
+          <i class="fas fa-sync"></i> {{ trans('comlink::comlink.sync_now') }}
+        </button>
+      </form>
+      <button type="button" class="btn btn-success ml-auto" id="comlink-add-mapping" @disabled($servers->isEmpty())>
+        <i class="fas fa-plus"></i> {{ trans('comlink::comlink.add_mapping') }}
+      </button>
     </div>
   </div>
 

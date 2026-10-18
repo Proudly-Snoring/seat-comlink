@@ -20,17 +20,17 @@
         </div>
         <div class="card-body">
           @if($discord)
-            <dl class="mb-0">
-              <dt>{{ trans('comlink::comlink.discord_username') }}</dt>
-              <dd>{{ $discord->username }}</dd>
-              <dt>{{ trans('comlink::comlink.discord_id') }}</dt>
-              <dd><code>{{ $discord->discord_id }}</code></dd>
+            <dl class="row mb-0">
+              <dt class="col-sm-5">{{ trans('comlink::comlink.discord_username') }}</dt>
+              <dd class="col-sm-7 mb-1">{{ $discord->username }}</dd>
+              <dt class="col-sm-5">{{ trans('comlink::comlink.discord_id') }}</dt>
+              <dd class="col-sm-7 mb-0"><code>{{ $discord->discord_id }}</code></dd>
             </dl>
           @else
             <p class="mb-0">{{ trans('comlink::comlink.identity_help') }}<br>{{ trans('comlink::comlink.identity_help_join') }}</p>
           @endif
         </div>
-        <div class="card-footer">
+        <div class="card-footer @if($discord) text-right @endif">
           @if($discord)
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#comlink-unlink">
               <i class="fas fa-unlink"></i> {{ trans('comlink::comlink.unlink') }}
@@ -59,7 +59,8 @@
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           </div>
           <div class="modal-body">
-            {{ trans('comlink::comlink.unlink_confirm', ['username' => $discord->username]) }}
+            {{ trans('comlink::comlink.unlink_confirm', ['username' => $discord->username]) }}<br>
+            <i class="fas fa-exclamation-triangle text-warning"></i> {{ trans('comlink::comlink.unlink_confirm_roles') }}
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">{{ trans('comlink::comlink.cancel') }}</button>

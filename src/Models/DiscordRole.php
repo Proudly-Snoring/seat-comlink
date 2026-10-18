@@ -35,6 +35,7 @@ use Seat\Services\Models\ExtensibleModel;
  * @property int $position
  * @property int $color
  * @property bool $managed
+ * @property int|null $member_count
  * @property \Carbon\Carbon|null $deleted_at
  */
 class DiscordRole extends ExtensibleModel
@@ -58,6 +59,7 @@ class DiscordRole extends ExtensibleModel
         'position' => 'integer',
         'color' => 'integer',
         'managed' => 'boolean',
+        'member_count' => 'integer',
     ];
 
     /**

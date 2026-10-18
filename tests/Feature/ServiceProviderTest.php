@@ -22,7 +22,7 @@ class ServiceProviderTest extends TestCase
         $menu = config('package.sidebar.comlink');
 
         $this->assertSame('seat-comlink', $menu['route_segment']);
-        $this->assertCount(6, $menu['entries']);
+        $this->assertSame(['identity', 'mappings', 'servers', 'users', 'logs', 'settings'], array_column($menu['entries'], 'name'));
 
         foreach ($menu['entries'] as $entry)
             $this->assertTrue(app('router')->has($entry['route']), $entry['route']);
