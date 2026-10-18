@@ -69,6 +69,8 @@ Route::group([
             ->name('seatcomlink::settings.preview');
         Route::post('/settings/servers/{server}', [SettingsController::class, 'updateServer'])
             ->name('seatcomlink::settings.server');
+        Route::post('/settings/servers/{server}/sync', [SettingsController::class, 'syncServer'])
+            ->name('seatcomlink::settings.server.sync');
     });
 
     Route::group(['middleware' => 'can:comlink.logs'], function () {

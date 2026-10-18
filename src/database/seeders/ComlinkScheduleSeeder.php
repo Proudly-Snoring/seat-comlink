@@ -37,6 +37,14 @@ class ComlinkScheduleSeeder extends AbstractScheduleSeeder
     {
         return [
             [
+                'command' => ComlinkSettings::SYNC_COMMAND,
+                'expression' => ComlinkSettings::cronExpression(config('comlink.config.defaults.sync_rate')),
+                'allow_overlap' => false,
+                'allow_maintenance' => false,
+                'ping_before' => null,
+                'ping_after' => null,
+            ],
+            [
                 'command' => ComlinkSettings::PRUNE_COMMAND,
                 'expression' => '30 3 * * *',
                 'allow_overlap' => false,

@@ -127,6 +127,10 @@ return [
     'mapping_invalid_role' => 'This role does not exist on the selected server.',
     'mapping_duplicate' => 'This mapping already exists.',
 
+    // synchronization
+    'reason_owner' => 'the server owner\'s nickname cannot be changed by a bot',
+    'reason_above_bot' => 'the member is ranked above the bot\'s highest role',
+
     // roles
     'role_reason_everyone' => 'The @everyone role cannot be assigned.',
     'role_reason_integration' => 'Managed by an integration (bot or subscription).',

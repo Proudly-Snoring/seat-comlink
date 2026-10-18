@@ -162,11 +162,9 @@
           </div>
 
           <button type="submit" class="btn btn-sm btn-primary">{{ trans('comlink::comlink.save') }}</button>
-          @if(Route::has('seatcomlink::settings.server.sync'))
-            <button type="submit" class="btn btn-sm btn-default" formaction="{{ route('seatcomlink::settings.server.sync', $server) }}">
-              <i class="fas fa-sync"></i> {{ trans('comlink::comlink.sync_now') }}
-            </button>
-          @endif
+          <button type="submit" class="btn btn-sm btn-default" formaction="{{ route('seatcomlink::settings.server.sync', $server) }}">
+            <i class="fas fa-sync"></i> {{ trans('comlink::comlink.sync_now') }}
+          </button>
         </form>
       @empty
         <p class="text-muted mb-0">{{ trans('comlink::comlink.no_servers') }}</p>

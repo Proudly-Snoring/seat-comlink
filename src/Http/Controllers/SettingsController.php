@@ -27,6 +27,7 @@ use ProudlySnoring\Seat\Comlink\Drivers\Discord\DiscordOAuth;
 use ProudlySnoring\Seat\Comlink\Drivers\Discord\NicknameRenderer;
 use ProudlySnoring\Seat\Comlink\Http\Validation\ServerSettingsRequest;
 use ProudlySnoring\Seat\Comlink\Http\Validation\SettingsRequest;
+use ProudlySnoring\Seat\Comlink\Jobs\SyncServer;
 use ProudlySnoring\Seat\Comlink\Models\DiscordServer;
 use ProudlySnoring\Seat\Comlink\Services\ComlinkLogger;
 use ProudlySnoring\Seat\Comlink\Services\ComlinkSettings;
@@ -108,6 +109,20 @@ class SettingsController extends Controller
 
         return redirect()->route('seatcomlink::settings')
             ->with('success', trans('comlink::comlink.settings_saved'));
+    }
+
+    /**
+     * Queue a synchronization of a server.
+     *
+     * @param  \ProudlySnoring\Seat\Comlink\Models\DiscordServer  $server
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function syncServer(DiscordServer $server)
+    {
+        SyncServer::dispatch($server->server_id);
+
+        return redirect()->route('seatcomlink::settings')
+            ->with('success', trans('comlink::comlink.sync_queued', ['server' => $server->name]));
     }
 
     /**
