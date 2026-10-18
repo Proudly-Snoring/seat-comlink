@@ -24,6 +24,7 @@ namespace ProudlySnoring\Seat\Comlink\Http\Controllers;
 
 use Illuminate\Http\Request;
 use ProudlySnoring\Seat\Comlink\Models\DiscordUser;
+use ProudlySnoring\Seat\Comlink\Services\IdentityResolver;
 use Seat\Web\Http\Controllers\Controller;
 
 /**
@@ -37,7 +38,7 @@ class UsersController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\View\View
      */
-    public function index(Request $request)
+    public function index(Request $request, IdentityResolver $resolver)
     {
         $search = trim((string) $request->query('search'));
 
@@ -52,6 +53,9 @@ class UsersController extends Controller
             ->orderBy('user_id')
             ->paginate(50)->withQueryString();
 
-        return view('comlink::users.index', compact('users', 'search'));
+        // main character names (first linked character if no main)
+        $names = collect($resolver->forUsers($users->pluck('user_id')->all()))->map(fn ($values) => $values['main_name']);
+
+        return view('comlink::users.index', compact('users', 'search', 'names'));
     }
 }

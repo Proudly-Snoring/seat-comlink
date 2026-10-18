@@ -229,6 +229,21 @@ class SyncTest extends TestCase
         $this->assertNull(DiscordServer::first()->last_synced_at);
     }
 
+    public function testUnexpectedErrorsAreLogged()
+    {
+        // malformed discord payload: member without user
+        $this->fake_guilds['100']['members']['20'] = ['nick' => null, 'roles' => []];
+
+        try {
+            SyncServer::dispatchSync('100');
+            $this->fail('exception expected');
+        } catch (\Throwable $e) {
+            // rethrown for the queue manager
+        }
+
+        $this->assertSame(1, ComlinkLog::where('level', 'error')->where('message', 'like', 'Failed to synchronize server Alliance: %')->count());
+    }
+
     public function testSingleServerOption()
     {
         $this->artisan('comlink:discord:sync', ['--server' => '100', '--now' => true])->assertSuccessful();

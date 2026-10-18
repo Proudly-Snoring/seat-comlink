@@ -57,7 +57,7 @@ class LogsAndUsersTest extends TestCase
 
     public function testUsersView()
     {
-        $user = $this->makeUser('Alice Pilot');
+        $user = $this->makeUser('alice-account', ['id' => 1001, 'name' => 'Alice Pilot']);
         DiscordUser::create(['user_id' => $user->id, 'discord_id' => '11', 'username' => 'alice_d']);
         DiscordServer::create(['server_id' => '100', 'name' => 'Alliance']);
         DiscordServer::create(['server_id' => '200', 'name' => 'Corp']);

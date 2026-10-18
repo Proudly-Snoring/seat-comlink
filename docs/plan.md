@@ -139,7 +139,10 @@ Each milestone ends with tests green and a commit.
 * Queues (`seat-queues.php`): `default`, `high`, `characters`, `corporations`, `public`, `notifications` - jobs use `default`.
 * Tokens read with batch queries on `users`, `refresh_tokens`, `character_infos`, `character_affiliations`, `corporation_infos`, `alliances`.
 * Plugin permissions use `GlobalPolicy` (scope `comlink`); sidebar parent `permission` accepts an array (any of).
-* Smoke tested in the `ghcr.io/eveseat/seat:5` image (MariaDB + Redis): install, migrations, plugin seeder (schedules), routes, commands and the 5 pages rendered in the real layout.
+* The SeAT console kernel reads the `schedules` table at each `schedule:run`: a new sync rate applies without cache clear.
+* Smoke tested in the `ghcr.io/eveseat/seat:5` image (MariaDB + Redis): install, migrations, plugin seeder (schedules), routes, commands,
+  the 5 pages rendered in the real layout, a non-admin user with `comlink.identity` only sees the Comlink menu with the Identity entry
+  (403 on the others), Access Management shows the "Comlink" scope with translated labels.
 
 ## Development
 

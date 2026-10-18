@@ -33,7 +33,7 @@
           @forelse($users as $link)
             <tr>
               <td>{{ $link->user_id }}</td>
-              <td>{{ $link->user->name ?? '-' }}</td>
+              <td>{{ $names[$link->user_id] ?? $link->user->name ?? '-' }}</td>
               <td><code>{{ $link->discord_id }}</code></td>
               <td>{{ $link->username }}</td>
               <td>

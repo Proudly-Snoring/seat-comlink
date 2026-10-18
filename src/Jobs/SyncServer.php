@@ -31,6 +31,7 @@ use ProudlySnoring\Seat\Comlink\Drivers\Discord\DiscordException;
 use ProudlySnoring\Seat\Comlink\Drivers\Discord\ServerSynchronizer;
 use ProudlySnoring\Seat\Comlink\Models\DiscordServer;
 use ProudlySnoring\Seat\Comlink\Services\ComlinkLogger;
+use Throwable;
 
 /**
  * Synchronize the roles and nicknames of a discord server. Never runs twice at the same time for a server.
@@ -97,6 +98,11 @@ class SyncServer implements ShouldQueue, ShouldBeUnique
             $hint = $e->discord_code === DiscordException::MISSING_ACCESS ? ' - check the bot has the Server Members Intent' : '';
 
             ComlinkLogger::error(sprintf('Failed to synchronize server %s: %s%s', $server->name, $e->reason(), $hint));
+        } catch (Throwable $e) {
+            ComlinkLogger::error(sprintf('Failed to synchronize server %s: %s', $server->name, $e->getMessage()));
+
+            // keep the failed job visible in the queue manager
+            throw $e;
         }
     }
 }

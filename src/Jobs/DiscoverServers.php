@@ -31,6 +31,7 @@ use ProudlySnoring\Seat\Comlink\Drivers\Discord\DiscordClient;
 use ProudlySnoring\Seat\Comlink\Drivers\Discord\DiscordException;
 use ProudlySnoring\Seat\Comlink\Drivers\Discord\ServerRefresher;
 use ProudlySnoring\Seat\Comlink\Services\ComlinkLogger;
+use Throwable;
 
 /**
  * List the bot's servers (logging invitations / removals), then synchronize each one of them.
@@ -88,6 +89,10 @@ class DiscoverServers implements ShouldQueue, ShouldBeUnique
             ComlinkLogger::error(sprintf('Failed to list discord servers: %s', $e->reason()));
 
             return;
+        } catch (Throwable $e) {
+            ComlinkLogger::error(sprintf('Failed to list discord servers: %s', $e->getMessage()));
+
+            throw $e;
         }
 
         foreach ($servers as $server) {
