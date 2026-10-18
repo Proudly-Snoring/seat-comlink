@@ -10,10 +10,12 @@
     <div class="card-header">
       <h3 class="card-title"><i class="fab fa-discord"></i> {{ trans('comlink::comlink.procedure_title') }}</h3>
       <div class="card-tools">
-        <button type="button" class="btn btn-sm btn-default" data-toggle="collapse" data-target="#comlink-procedure"
-                aria-expanded="{{ $has_credentials ? 'false' : 'true' }}" aria-controls="comlink-procedure" id="comlink-procedure-toggle">
-          <i class="fas fa-eye"></i> {{ trans('comlink::comlink.procedure_toggle') }}
-        </button>
+        <div class="input-group input-group-sm">
+          <button type="button" class="btn btn-sm btn-default" data-toggle="collapse" data-target="#comlink-procedure"
+                  aria-expanded="{{ $has_credentials ? 'false' : 'true' }}" aria-controls="comlink-procedure" id="comlink-procedure-toggle">
+            <i class="fas fa-eye"></i> {{ trans('comlink::comlink.procedure_toggle') }}
+          </button>
+        </div>
       </div>
     </div>
     <div class="collapse {{ $has_credentials ? '' : 'show' }}" id="comlink-procedure">
@@ -32,7 +34,6 @@
                 </button>
               </div>
             </div>
-            <small class="text-muted">{{ trans('comlink::comlink.procedure_step_redirect_help') }}</small>
           </li>
           <li>{!! trans('comlink::comlink.procedure_step_token') !!}</li>
           <li>{!! trans('comlink::comlink.procedure_step_intent') !!}</li>

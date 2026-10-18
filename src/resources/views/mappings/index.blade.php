@@ -9,21 +9,23 @@
     <div class="card-header">
       <h3 class="card-title">{{ trans('comlink::comlink.menu_mappings') }}</h3>
       <div class="card-tools">
-        <form method="post" action="{{ route('seatcomlink::mappings.import') }}" class="d-inline">
-          {{ csrf_field() }}
-          <button type="submit" class="btn btn-sm btn-default">
-            <i class="fas fa-download"></i> {{ trans('comlink::comlink.import_roles') }}
+        <div class="input-group input-group-sm">
+          <form method="post" action="{{ route('seatcomlink::mappings.import') }}">
+            {{ csrf_field() }}
+            <button type="submit" class="btn btn-sm btn-default">
+              <i class="fas fa-download"></i> {{ trans('comlink::comlink.import_roles') }}
+            </button>
+          </form>
+          <form method="post" action="{{ route('seatcomlink::mappings.sync') }}" class="ml-1">
+            {{ csrf_field() }}
+            <button type="submit" class="btn btn-sm btn-default" title="{{ trans('comlink::comlink.sync_now_help') }}">
+              <i class="fas fa-sync"></i> {{ trans('comlink::comlink.sync_now') }}
+            </button>
+          </form>
+          <button type="button" class="btn btn-sm btn-success ml-1" id="comlink-add-mapping" @disabled($servers->isEmpty())>
+            <i class="fas fa-plus"></i> {{ trans('comlink::comlink.add_mapping') }}
           </button>
-        </form>
-        <form method="post" action="{{ route('seatcomlink::mappings.sync') }}" class="d-inline">
-          {{ csrf_field() }}
-          <button type="submit" class="btn btn-sm btn-default" title="{{ trans('comlink::comlink.sync_now_help') }}">
-            <i class="fas fa-sync"></i> {{ trans('comlink::comlink.sync_now') }}
-          </button>
-        </form>
-        <button type="button" class="btn btn-sm btn-success" id="comlink-add-mapping" @disabled($servers->isEmpty())>
-          <i class="fas fa-plus"></i> {{ trans('comlink::comlink.add_mapping') }}
-        </button>
+        </div>
       </div>
     </div>
     <div class="card-body">

@@ -104,7 +104,7 @@ All views are grouped in a "Comlink" sidebar menu.
           (create the application, copy the client ID/secret, register the callback URL, create the bot token,
           enable the "Server Members" intent, invite the bot, move the bot's role above the managed roles).
             * The callback URL step details where to register it in the discord portal (OAuth2, Redirects, Add Redirect, Save Changes),
-              shows the URL with a copy button, and explains that linking fails without it.
+              and shows the URL with a copy button.
             * A button masks/unmasks the procedure.
             * It is visible by default if the credentials are not set, masked by default otherwise.
         * The discord bot credentials (client ID, client secret, bot token - editable - secrets masked by default but with a button to reveal them),
