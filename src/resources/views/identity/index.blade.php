@@ -6,7 +6,7 @@
 @section('full')
 
   <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6 col-lg-4 col-xl-3">
       <div class="card">
         <div class="card-header">
           <h3 class="card-title"><i class="fab fa-discord"></i> Discord</h3>
@@ -21,10 +21,10 @@
         <div class="card-body">
           @if($discord)
             <dl class="row mb-0">
-              <dt class="col-sm-5">{{ trans('comlink::comlink.discord_username') }}</dt>
-              <dd class="col-sm-7 mb-1">{{ $discord->username }}</dd>
-              <dt class="col-sm-5">{{ trans('comlink::comlink.discord_id') }}</dt>
-              <dd class="col-sm-7 mb-0"><code>{{ $discord->discord_id }}</code></dd>
+              <dt class="col-5 text-right text-nowrap">{{ trans('comlink::comlink.discord_username') }}</dt>
+              <dd class="col-7 mb-1">{{ $discord->username }}</dd>
+              <dt class="col-5 text-right text-nowrap">{{ trans('comlink::comlink.discord_id') }}</dt>
+              <dd class="col-7 mb-0"><code>{{ $discord->discord_id }}</code></dd>
             </dl>
           @else
             <p class="mb-0">{{ trans('comlink::comlink.identity_help') }}<br>{{ trans('comlink::comlink.identity_help_join') }}</p>

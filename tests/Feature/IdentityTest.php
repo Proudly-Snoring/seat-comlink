@@ -173,7 +173,7 @@ class IdentityTest extends TestCase
         DiscordUser::create(['user_id' => $this->user->id, 'discord_id' => '555', 'username' => 'me']);
 
         $this->actingAs($this->user)->get(route('seatcomlink::identity'))
-            ->assertSee('<dt class="col-sm-5">' . trans('comlink::comlink.discord_username') . '</dt>', false)
+            ->assertSee('<dt class="col-5 text-right text-nowrap">' . trans('comlink::comlink.discord_username') . '</dt>', false)
             ->assertSee('card-footer  text-right', false)
             ->assertSee(trans('comlink::comlink.unlink_confirm', ['username' => 'me']) . '<br>', false)
             ->assertSee('<i class="fas fa-exclamation-triangle text-warning"></i> ' . trans('comlink::comlink.unlink_confirm_roles'), false);
