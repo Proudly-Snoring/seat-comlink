@@ -57,7 +57,7 @@
     * some zero-width and non-rendering characters are forbidden.
 * At synchronization, the rendered nickname is adapted to these rules: forbidden characters and extra whitespaces removed, then truncated to 32 characters.
   It is compared to the current nickname after this adaptation, so it is only updated when it actually differs.
-* In the settings, a warning below the format input explains these rules and that longer nicknames will be truncated.
+* In the Discord Servers view, an information note between the format input and the available tokens explains these rules and that longer nicknames will be truncated.
 * The nickname cannot be enforced on users ranked above the bot (including the server owner): a warning is logged (see Logs).
 
 ## Views
@@ -85,24 +85,33 @@ All views are grouped in a "Comlink" sidebar menu.
         * The server, squad and role are picked from lists (roles as known at the last synchronization).
         * Roles that the bot cannot manage (above the bot's role, or managed by an integration) are displayed but not selectable, with the reason.
     * An "Import roles now" button refreshes the servers and roles lists from discord immediately (without waiting for the next synchronization).
+    * A "Sync now" button forces the synchronization of all the discord servers now (queued, runs in background).
+    * Intended for admins only (configurable from the standard SeAT roles management).
+* Comlink/Discord Servers
+    * The list of discord servers where the bot is currently present, one card for each with:
+        * The server icon, name and ID,
+        * The datetime of the last synchronization (or "never"),
+        * A "Enforce nickname" checkbox - If checked (default), the bot enforce the discord nicknames for this server, else it doesn't touch it.
+        * A "Enforce roles" checkbox - If checked (default), the bot enforce the discord roles for this server, else it doesn't touch it.
+        * The nickname format (if "Enforce nickname" is checked) - default is `[{corp_ticker}] {main_name}`:
+            * its label includes a live preview for the current admin (ex: "Nickname format - ex: [PR.SN] Ryanis"),
+            * below the input, the naming rules information (see Nicknames), then the available tokens.
+        * A "Save" button in the card footer, on the right.
     * Intended for admins only (configurable from the standard SeAT roles management).
 * Comlink/Settings
     * The plugin settings with:
         * A short procedure explaining how to create the discord application and its bot
           (create the application, copy the client ID/secret, register the callback URL, create the bot token,
           enable the "Server Members" intent, invite the bot, move the bot's role above the managed roles).
+            * The callback URL step details where to register it in the discord portal (OAuth2, Redirects, Add Redirect, Save Changes),
+              shows the URL with a copy button, and explains that linking fails without it.
             * A button masks/unmasks the procedure.
             * It is visible by default if the credentials are not set, masked by default otherwise.
         * The discord bot credentials (client ID, client secret, bot token - editable - secrets masked by default but with a button to reveal them),
         * The OAuth callback URL to register in the discord application (read only, with a copy button),
         * An "Invite bot" button opening the discord invitation page with the required permissions,
         * The rate of the synchronization, picked from a list: 1, 2, 3, 4, 5 (default), 6, 10, 12, 15, 20, 30 or 60 minutes,
-        * The logs retention (in days, default 30),
-        * The list of discord servers where the bot is currently present with for each:
-            * A "Enforce nickname" checkbox - If checked (default), the bot enforce the discord nicknames for this server, else it doesn't touch it.
-            * A "Enforce roles" checkbox - If checked (default), the bot enforce the discord roles for this server, else it doesn't touch it.
-            * The nickname format (if "Enforce nickname" is checked) - default is `[{corp_ticker}] {main_name}` - with a live preview for the current admin and the naming rules warning (see Nicknames),
-            * A button for each one to force synchronization now (queued, runs in background).
+        * The logs retention (in days, default 30).
     * Intended for admins only (configurable from the standard SeAT roles management).
 * Comlink/Logs
     * The plugin logs in table format, sorted from newer to older with pagination and the following columns:
@@ -110,7 +119,7 @@ All views are grouped in a "Comlink" sidebar menu.
         * Log level (debug/info/warning/error),
         * The driver name (only "discord" for now),
         * The actual log message (plain text).
-    * The table must be filterable by log level, driver name, and datetime range.
+    * The table must be filterable by log level, driver name, and date range (two date inputs explicitly labelled "From" and "To").
     * Intended for admins only (configurable from the standard SeAT roles management).
 * Comlink/Users
     * Displays a table of known discord users with the following columns:

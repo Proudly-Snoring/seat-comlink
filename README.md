@@ -35,13 +35,14 @@ Nicknames follow Discord naming rules: extra whitespaces and zero-width/non-rend
 
 ### Views and permissions
 
-| View                         | Purpose                                        | Permission         |
-| ---------------------------- | ---------------------------------------------- | ------------------ |
-| `Comlink > Identity`         | Link / unlink one's Discord account            | `comlink.identity` |
-| `Comlink > Discord Mappings` | Squads -> roles mapping, per server            | `comlink.mappings` |
-| `Comlink > Settings`         | Bot credentials, sync rate, per-server options | `comlink.settings` |
-| `Comlink > Logs`             | Plugin logs                                    | `comlink.logs`     |
-| `Comlink > Users`            | Linked users and their Discord state           | `comlink.users`    |
+| View                         | Purpose                                    | Permission         |
+| ---------------------------- | ------------------------------------------ | ------------------ |
+| `Comlink > Identity`         | Link / unlink one's Discord account        | `comlink.identity` |
+| `Comlink > Discord Mappings` | Squads -> roles mapping, per server        | `comlink.mappings` |
+| `Comlink > Discord Servers`  | Per-server options, nickname format        | `comlink.servers`  |
+| `Comlink > Settings`         | Bot credentials, sync rate, logs retention | `comlink.settings` |
+| `Comlink > Logs`             | Plugin logs                                | `comlink.logs`     |
+| `Comlink > Users`            | Linked users and their Discord state       | `comlink.users`    |
 
 Grant them from `Settings > Access Management`. Give `comlink.identity` to the role(s) of all users who should be able to link their account.
 
@@ -94,8 +95,10 @@ Then restart your queue workers (supervisor) so they load the plugin.
 ### 2. Create the Discord application
 
 1. Go to the [Discord developer portal](https://discord.com/developers/applications) and create an application.
-2. In **OAuth2**, copy the **Client ID** and **Client Secret**, and add the redirect URL displayed in `Comlink > Settings`
-   (`https://<your-seat>/seat-comlink/discord/callback`).
+2. In **OAuth2**, copy the **Client ID** and **Client Secret**.
+   Then in **Redirects**, click **Add Redirect**, paste the callback URL displayed in `Comlink > Settings`
+   (`https://<your-seat>/seat-comlink/discord/callback`) and click **Save Changes**.
+   Without it, users get an "Invalid OAuth2 redirect_uri" error when linking their account.
 3. In **Bot**:
     * reset and copy the **Token**,
     * enable the **Server Members Intent** (privileged intent, required to list members),
@@ -106,7 +109,7 @@ Then restart your queue workers (supervisor) so they load the plugin.
 1. In `Comlink > Settings`, enter the Client ID, Client Secret and Bot Token, then save.
 2. Click **Invite bot** and add it to each Discord server (requires the *Manage Roles* and *Manage Nicknames* permissions).
 3. On each Discord server, drag the bot's role **above** every role it must manage (Discord hierarchy rule).
-4. Back in `Comlink > Settings`, adjust per-server options and the sync rate.
+4. In `Comlink > Discord Servers`, adjust the per-server options (the server appears after the next synchronization, or after "Import roles now" in the mappings).
 5. Create the mappings in `Comlink > Discord Mappings`.
 6. Grant the `comlink.*` permissions in `Settings > Access Management`.
 

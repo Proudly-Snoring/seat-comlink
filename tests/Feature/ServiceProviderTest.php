@@ -10,10 +10,10 @@ class ServiceProviderTest extends TestCase
     public function testPermissionsAreRegistered()
     {
         $this->assertSame(
-            ['identity', 'mappings', 'settings', 'logs', 'users'],
+            ['identity', 'mappings', 'servers', 'settings', 'logs', 'users'],
             array_keys(config('seat.permissions.comlink')));
 
-        foreach (['identity', 'mappings', 'settings', 'logs', 'users'] as $permission)
+        foreach (['identity', 'mappings', 'servers', 'settings', 'logs', 'users'] as $permission)
             $this->assertTrue(Gate::has('comlink.' . $permission));
     }
 
@@ -22,7 +22,7 @@ class ServiceProviderTest extends TestCase
         $menu = config('package.sidebar.comlink');
 
         $this->assertSame('seat-comlink', $menu['route_segment']);
-        $this->assertCount(5, $menu['entries']);
+        $this->assertCount(6, $menu['entries']);
 
         foreach ($menu['entries'] as $entry)
             $this->assertTrue(app('router')->has($entry['route']), $entry['route']);
@@ -37,7 +37,7 @@ class ServiceProviderTest extends TestCase
     {
         $user = $this->makeUser('nobody');
 
-        foreach (['identity', 'mappings', 'settings', 'logs', 'users'] as $page)
+        foreach (['identity', 'mappings', 'servers', 'settings', 'logs', 'users'] as $page)
             $this->actingAs($user)->get(route('seatcomlink::' . $page))->assertForbidden();
     }
 
@@ -47,10 +47,10 @@ class ServiceProviderTest extends TestCase
         $user = $this->makeUser('granted', ['id' => 90000001, 'name' => 'Granted Pilot']);
 
         // SeAT caches the user ACL: grant everything before the first check
-        foreach (['identity', 'mappings', 'settings', 'logs', 'users'] as $page)
+        foreach (['identity', 'mappings', 'servers', 'settings', 'logs', 'users'] as $page)
             $this->grant($user, 'comlink.' . $page);
 
-        foreach (['identity', 'mappings', 'settings', 'logs', 'users'] as $page)
+        foreach (['identity', 'mappings', 'servers', 'settings', 'logs', 'users'] as $page)
             $this->actingAs($user)->get(route('seatcomlink::' . $page))->assertOk();
     }
 }

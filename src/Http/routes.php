@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Route;
 use ProudlySnoring\Seat\Comlink\Http\Controllers\IdentityController;
 use ProudlySnoring\Seat\Comlink\Http\Controllers\LogsController;
 use ProudlySnoring\Seat\Comlink\Http\Controllers\MappingsController;
+use ProudlySnoring\Seat\Comlink\Http\Controllers\ServersController;
 use ProudlySnoring\Seat\Comlink\Http\Controllers\SettingsController;
 use ProudlySnoring\Seat\Comlink\Http\Controllers\UsersController;
 
@@ -54,10 +55,21 @@ Route::group([
             ->name('seatcomlink::mappings.store');
         Route::post('/mappings/import-roles', [MappingsController::class, 'importRoles'])
             ->name('seatcomlink::mappings.import');
+        Route::post('/mappings/sync', [MappingsController::class, 'sync'])
+            ->name('seatcomlink::mappings.sync');
         Route::put('/mappings/{mapping}', [MappingsController::class, 'update'])
             ->name('seatcomlink::mappings.update');
         Route::delete('/mappings/{mapping}', [MappingsController::class, 'destroy'])
             ->name('seatcomlink::mappings.destroy');
+    });
+
+    Route::group(['middleware' => 'can:comlink.servers'], function () {
+        Route::get('/servers', [ServersController::class, 'index'])
+            ->name('seatcomlink::servers');
+        Route::get('/servers/preview', [ServersController::class, 'preview'])
+            ->name('seatcomlink::servers.preview');
+        Route::post('/servers/{server}', [ServersController::class, 'update'])
+            ->name('seatcomlink::servers.update');
     });
 
     Route::group(['middleware' => 'can:comlink.settings'], function () {
@@ -65,12 +77,6 @@ Route::group([
             ->name('seatcomlink::settings');
         Route::post('/settings', [SettingsController::class, 'update'])
             ->name('seatcomlink::settings.update');
-        Route::get('/settings/preview', [SettingsController::class, 'preview'])
-            ->name('seatcomlink::settings.preview');
-        Route::post('/settings/servers/{server}', [SettingsController::class, 'updateServer'])
-            ->name('seatcomlink::settings.server');
-        Route::post('/settings/servers/{server}/sync', [SettingsController::class, 'syncServer'])
-            ->name('seatcomlink::settings.server.sync');
     });
 
     Route::group(['middleware' => 'can:comlink.logs'], function () {

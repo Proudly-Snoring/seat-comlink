@@ -277,10 +277,17 @@ class SyncTest extends TestCase
         Queue::fake();
         $admin = $this->makeUser('admin', null, true);
 
-        $this->actingAs($admin)->post(route('seatcomlink::settings.server.sync', DiscordServer::first()))
-            ->assertSessionHas('success');
+        $this->actingAs($admin)->get(route('seatcomlink::mappings'))
+            ->assertSee(route('seatcomlink::mappings.sync'));
 
-        Queue::assertPushed(SyncServer::class, fn ($job) => $job->server_id === '100');
+        $this->actingAs($admin)->post(route('seatcomlink::mappings.sync'))
+            ->assertSessionHas('success', trans('comlink::comlink.sync_queued'));
+
+        Queue::assertPushed(DiscoverServers::class);
+
+        ComlinkSettings::setCredentials(null, null, null);
+        $this->actingAs($admin)->post(route('seatcomlink::mappings.sync'))->assertSessionHas('error');
+        Queue::assertPushed(DiscoverServers::class, 1);
     }
 
     public function testScheduleSeeder()

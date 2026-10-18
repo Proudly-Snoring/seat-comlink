@@ -26,6 +26,7 @@ use Illuminate\Http\Request;
 use ProudlySnoring\Seat\Comlink\Drivers\Discord\DiscordException;
 use ProudlySnoring\Seat\Comlink\Drivers\Discord\ServerRefresher;
 use ProudlySnoring\Seat\Comlink\Http\Validation\MappingRequest;
+use ProudlySnoring\Seat\Comlink\Jobs\DiscoverServers;
 use ProudlySnoring\Seat\Comlink\Models\DiscordMapping;
 use ProudlySnoring\Seat\Comlink\Models\DiscordServer;
 use ProudlySnoring\Seat\Comlink\Services\ComlinkLogger;
@@ -132,6 +133,21 @@ class MappingsController extends Controller
         }
 
         return redirect()->back()->with('success', trans_choice('comlink::comlink.import_roles_done', $servers->count(), ['count' => $servers->count()]));
+    }
+
+    /**
+     * Queue a synchronization of all servers.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function sync()
+    {
+        if (! ComlinkSettings::hasCredentials())
+            return redirect()->back()->with('error', trans('comlink::comlink.not_configured'));
+
+        DiscoverServers::dispatch();
+
+        return redirect()->back()->with('success', trans('comlink::comlink.sync_queued'));
     }
 
     /**

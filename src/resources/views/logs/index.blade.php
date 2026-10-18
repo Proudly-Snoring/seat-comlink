@@ -25,15 +25,17 @@
             @endforeach
           </select>
         </div>
+        @foreach(['from', 'to'] as $bound)
+          <div class="col-md-3">
+            <div class="input-group input-group-sm">
+              <div class="input-group-prepend">
+                <label class="input-group-text" for="log_{{ $bound }}">{{ trans('comlink::comlink.' . $bound) }}</label>
+              </div>
+              <input type="date" name="{{ $bound }}" id="log_{{ $bound }}" class="form-control" value="{{ $filters[$bound] ?? '' }}">
+            </div>
+          </div>
+        @endforeach
         <div class="col-md-2">
-          <input type="date" name="from" class="form-control form-control-sm" value="{{ $filters['from'] ?? '' }}"
-                 aria-label="{{ trans('comlink::comlink.from') }}" title="{{ trans('comlink::comlink.from') }}">
-        </div>
-        <div class="col-md-2">
-          <input type="date" name="to" class="form-control form-control-sm" value="{{ $filters['to'] ?? '' }}"
-                 aria-label="{{ trans('comlink::comlink.to') }}" title="{{ trans('comlink::comlink.to') }}">
-        </div>
-        <div class="col-md-4">
           <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-filter"></i> {{ trans('comlink::comlink.filter') }}</button>
           <a href="{{ route('seatcomlink::logs') }}" class="btn btn-sm btn-default">{{ trans('comlink::comlink.reset') }}</a>
         </div>

@@ -27,7 +27,7 @@ return [
         'icon' => 'fas fa-headset',
         'route_segment' => 'seat-comlink',
         'permission' => [
-            'comlink.identity', 'comlink.mappings', 'comlink.settings', 'comlink.logs', 'comlink.users',
+            'comlink.identity', 'comlink.mappings', 'comlink.servers', 'comlink.settings', 'comlink.logs', 'comlink.users',
         ],
         'entries' => [
             [
@@ -43,6 +43,13 @@ return [
                 'icon' => 'fab fa-discord',
                 'route' => 'seatcomlink::mappings',
                 'permission' => 'comlink.mappings',
+            ],
+            [
+                'name' => 'servers',
+                'label' => 'comlink::comlink.menu_servers',
+                'icon' => 'fas fa-server',
+                'route' => 'seatcomlink::servers',
+                'permission' => 'comlink.servers',
             ],
             [
                 'name' => 'settings',

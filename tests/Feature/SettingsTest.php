@@ -38,7 +38,8 @@ class SettingsTest extends TestCase
         $this->actingAs($this->admin)->get(route('seatcomlink::settings'))
             ->assertOk()
             ->assertSee('collapse show', false)
-            ->assertSee(route('seatcomlink::discord.callback'))
+            ->assertSee('id="procedure_callback_url" value="' . route('seatcomlink::discord.callback') . '"', false)
+            ->assertSee('Add Redirect', false)
             ->assertSee(trans('comlink::comlink.invite_bot_disabled'));
     }
 
@@ -80,42 +81,10 @@ class SettingsTest extends TestCase
         $this->assertSame(0, ComlinkLog::count());
     }
 
-    public function testServerSettings()
+    public function testServersAreNotInSettings()
     {
-        $server = DiscordServer::create(['server_id' => '1', 'name' => 'Alliance']);
+        DiscordServer::create(['server_id' => '1', 'name' => 'Alliance']);
 
-        $this->actingAs($this->admin)->get(route('seatcomlink::settings'))
-            ->assertSee('Alliance')
-            ->assertSee('[PILOT] Admin Pilot');
-
-        $this->actingAs($this->admin)->post(route('seatcomlink::settings.server', $server), [
-            'enforce_nickname' => '1',
-            'enforce_roles' => '0',
-            'nickname_format' => '{main_name} ({corp_ticker})',
-        ])->assertRedirect(route('seatcomlink::settings'));
-
-        $server->refresh();
-        $this->assertTrue($server->enforce_nickname);
-        $this->assertFalse($server->enforce_roles);
-        $this->assertSame('{main_name} ({corp_ticker})', $server->nickname_format);
-
-        $this->actingAs($this->admin)->post(route('seatcomlink::settings.server', $server), [
-            'enforce_nickname' => '1',
-            'nickname_format' => '',
-        ])->assertSessionHasErrors('nickname_format');
-    }
-
-    public function testRemovedServersAreHidden()
-    {
-        DiscordServer::create(['server_id' => '1', 'name' => 'Gone Server', 'present' => false]);
-
-        $this->actingAs($this->admin)->get(route('seatcomlink::settings'))->assertDontSee('Gone Server');
-    }
-
-    public function testPreview()
-    {
-        $this->actingAs($this->admin)
-            ->getJson(route('seatcomlink::settings.preview', ['format' => '{alliance_ticker} | {main_name}']))
-            ->assertExactJson(['nickname' => '- | Admin Pilot']);
+        $this->actingAs($this->admin)->get(route('seatcomlink::settings'))->assertOk()->assertDontSee('Alliance');
     }
 }

@@ -15,6 +15,12 @@
             <i class="fas fa-download"></i> {{ trans('comlink::comlink.import_roles') }}
           </button>
         </form>
+        <form method="post" action="{{ route('seatcomlink::mappings.sync') }}" class="d-inline">
+          {{ csrf_field() }}
+          <button type="submit" class="btn btn-sm btn-default" title="{{ trans('comlink::comlink.sync_now_help') }}">
+            <i class="fas fa-sync"></i> {{ trans('comlink::comlink.sync_now') }}
+          </button>
+        </form>
         <button type="button" class="btn btn-sm btn-success" id="comlink-add-mapping" @disabled($servers->isEmpty())>
           <i class="fas fa-plus"></i> {{ trans('comlink::comlink.add_mapping') }}
         </button>
