@@ -42,23 +42,30 @@ Secrets (client secret, bot token) stored encrypted (`Crypt::encryptString`) in 
 ```
 src/
 ├── ComlinkServiceProvider.php
-├── Config/                       # sidebar, permissions, comlink.config.php
-├── Commands/                     # Sync, ImportWarlof, PruneLogs
-├── Drivers/
-│   ├── DriverInterface.php       # future VOIP drivers (identity card + sync)
-│   └── Discord/
-│       ├── DiscordClient.php     # REST wrapper on Laravel Http (auth, pagination, 429 retry)
-│       ├── DiscordOAuth.php      # identify flow (Socialite provider or plain Http)
-│       ├── NicknameRenderer.php  # tokens, dash fallback, discord normalization
-│       └── RoleResolver.php      # user -> squads -> expected managed roles per server
-├── Jobs/                         # DiscoverServers, SyncServer
-├── Http/{Controllers,Validation,DataTables}/
+├── Config/                         # sidebar, permissions, comlink.config.php
+├── Commands/                       # DiscordSync, DiscordImportWarlof, PruneLogs
+├── Drivers/Discord/
+│   ├── DiscordClient.php           # REST wrapper on Laravel Http (auth, pagination, 429 retry, bucket wait)
+│   ├── DiscordException.php        # HTTP status + discord JSON code, reason() for logs
+│   ├── DiscordOAuth.php            # identify flow (plain Http), callback + invite URLs
+│   ├── NicknameRenderer.php        # tokens, dash fallback, discord normalization
+│   ├── RoleResolver.php            # user -> squads (squad_member pivot) -> expected managed roles
+│   ├── ServerRefresher.php         # servers discovery (invited/removed), roles cache, orphans, bot position
+│   └── ServerSynchronizer.php      # per-member role diff, nickname, warnings dedup
+├── Jobs/                           # DiscoverServers, SyncServer (ShouldBeUnique)
+├── Http/{Controllers,Validation}/
 ├── Models/
-├── Observers/                    # UserObserver, SquadObserver
-├── Services/ComlinkLogger.php    # writes comlink_logs (+ Laravel log for errors)
+├── Observers/                      # UserObserver, SquadObserver
+├── Services/                       # ComlinkLogger, ComlinkSettings, IdentityResolver
 ├── database/{migrations,seeders}/
 └── resources/{views,lang}/
 ```
+
+Implementation notes (deviations from the first draft):
+* Tables are plain Blade tables with GET filters and Laravel pagination (no yajra DataTables): simpler, fully testable.
+* No `DriverInterface` yet: added when a second VOIP driver comes.
+* OAuth with plain Http (no Socialite provider dependency).
+* `NicknameRenderer` + `IdentityResolver` built in milestone 3 (needed by the live preview).
 
 Discord REST endpoints (API v10):
 * `GET /users/@me/guilds` - bot servers (discovery, invited/removed detection),
@@ -123,11 +130,18 @@ Each milestone ends with tests green and a commit.
 10. **Release**
     README check, manual test on a SeAT docker dev stack with a test Discord server, tag, Packagist.
 
-## To verify during implementation
+## Verified during implementation (SeAT 5: services 5.1.0, web 5.0.35, eveapi 5.0.37)
 
-* `SquadScope` behaviour in queue context (no authenticated user) - bypass if it filters.
-* `setting()` global write signature and caching (`Seat\Services\Settings\Seat`).
-* Exact `AbstractSeatPlugin` abstract methods (`getName`, `getPackageRepositoryUrl`, `getPackagistPackageName`, `getPackagistVendorName`).
-* SeAT queue names (`seat-queues.php`) to pick the right queue.
-* Character/corporation/alliance models for tokens (`Seat\Eveapi\Models\Character\CharacterInfo`, `CharacterAffiliation`, `Corporation\CorporationInfo`, `Alliances\Alliance`).
-* Socialite already shipped by `eveseat/web` (`laravel/socialite`, `socialiteproviders/manager`): reuse with `socialiteproviders/discord` vs plain Http.
+* `SquadScope` is a no-op without authenticated user, but `Squad` appends accessors calling `auth()->user()`:
+  memberships are read from the `squad_member` pivot, squads loaded with `withoutGlobalScopes()` and never serialized.
+* Global settings: `Seat\Services\Settings\Seat::get/set` (json encoded, `JSON_NUMERIC_CHECK`, cached forever).
+* `AbstractSeatPlugin` abstract methods: `getName`, `getPackageRepositoryUrl`, `getPackagistPackageName`, `getPackagistVendorName`.
+* Queues (`seat-queues.php`): `default`, `high`, `characters`, `corporations`, `public`, `notifications` - jobs use `default`.
+* Tokens read with batch queries on `users`, `refresh_tokens`, `character_infos`, `character_affiliations`, `corporation_infos`, `alliances`.
+* Plugin permissions use `GlobalPolicy` (scope `comlink`); sidebar parent `permission` accepts an array (any of).
+* Smoke tested in the `ghcr.io/eveseat/seat:5` image (MariaDB + Redis): install, migrations, plugin seeder (schedules), routes, commands and the 5 pages rendered in the real layout.
+
+## Development
+
+* Tests: `composer update && vendor/bin/phpunit` (Testbench, in-memory sqlite, minimal core tables in `tests/database/migrations`, SeAT layout stubbed in `tests/views`).
+* Discord is faked by `tests/FakesDiscord.php` (stateful: role/nickname writes are applied to the fake members).

@@ -134,7 +134,17 @@ Both plugins can be installed side by side.
 
 * `Failed to update nickname/role ... Missing Permissions`: the bot's role is below the target role or member. Move it up in the server's role list.
   The server owner's nickname can never be changed by a bot.
-* Members are not listed: the **Server Members Intent** is not enabled on the bot.
+* `Failed to synchronize server ... Missing Access (50001)`: the **Server Members Intent** is not enabled on the bot.
+* Nothing happens: check the bot token in `Comlink > Settings`, then run `php artisan comlink:discord:sync --now` and read `Comlink > Logs`.
+
+## Development
+
+```bash
+composer update
+vendor/bin/phpunit
+```
+
+Tests run on Testbench with an in-memory sqlite database and a stateful fake of the Discord API (no network).
 
 ## License
 
