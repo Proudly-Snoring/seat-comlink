@@ -22,6 +22,7 @@
 
 namespace ProudlySnoring\Seat\Comlink;
 
+use ProudlySnoring\Seat\Comlink\Commands\DiscordImportWarlof;
 use ProudlySnoring\Seat\Comlink\Commands\DiscordSync;
 use ProudlySnoring\Seat\Comlink\Commands\PruneLogs;
 use ProudlySnoring\Seat\Comlink\Database\Seeders\ComlinkScheduleSeeder;
@@ -57,6 +58,7 @@ class ComlinkServiceProvider extends AbstractSeatPlugin
         if ($this->app->runningInConsole()) {
             $this->commands([
                 DiscordSync::class,
+                DiscordImportWarlof::class,
                 PruneLogs::class,
             ]);
         }
