@@ -1,0 +1,50 @@
+{
+  "name": "proudly-snoring/seat-comlink",
+  "description": "SeAT plugin managing Discord roles (from squads) and nicknames on multiple servers",
+  "type": "seat-plugin",
+  "license": "GPL-2.0-or-later",
+  "keywords": ["seat", "eveonline", "discord", "squads"],
+  "authors": [
+    {
+      "name": "Proudly-Snoring"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "ProudlySnoring\\Seat\\Comlink\\": "src/",
+      "ProudlySnoring\\Seat\\Comlink\\Database\\Seeders\\": "src/database/seeders/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "ProudlySnoring\\Seat\\Comlink\\Tests\\": "tests/"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": "^8.1",
+    "ext-json": "*",
+    "eveseat/eveapi": "^5.0",
+    "eveseat/services": "^5.1",
+    "eveseat/web": "^5.0.35",
+    "guzzlehttp/guzzle": "^7.0",
+    "laravel/framework": "^10.0"
+  },
+  "require-dev": {
+    "josiasmontag/laravel-redis-mock": "^1.0",
+    "mockery/mockery": "^1.6",
+    "orchestra/testbench": "^8.0",
+    "phpunit/phpunit": "^10.0"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "ProudlySnoring\\Seat\\Comlink\\ComlinkServiceProvider"
+      ]
+    }
+  },
+  "config": {
+    "sort-packages": true
+  }
+}
