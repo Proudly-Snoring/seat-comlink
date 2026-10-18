@@ -32,6 +32,9 @@ class LogsAndUsersTest extends TestCase
 
         $this->actingAs($this->admin)->get(route('seatcomlink::logs'))
             ->assertOk()
+            ->assertSee('<label class="input-group-text" for="log_level">' . trans('comlink::comlink.level') . '</label>', false)
+            ->assertSee('<label class="input-group-text" for="log_driver">' . trans('comlink::comlink.driver') . '</label>', false)
+            ->assertSee('<label class="input-group-text" for="log_user">' . trans('comlink::comlink.log_user') . '</label>', false)
             ->assertSee('<label class="input-group-text" for="log_from">' . trans('comlink::comlink.from') . '</label>', false)
             ->assertSee('<label class="input-group-text" for="log_to">' . trans('comlink::comlink.to') . '</label>', false)
             ->assertSeeInOrder(['other driver', 'an error', 'first info']);

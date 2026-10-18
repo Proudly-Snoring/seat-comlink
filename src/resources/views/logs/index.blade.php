@@ -10,29 +10,44 @@
 
       <form method="get" action="{{ route('seatcomlink::logs') }}" class="form-row mb-3">
         <div class="col-md-2">
-          <select name="level" class="form-control form-control-sm" aria-label="{{ trans('comlink::comlink.level') }}">
-            <option value="">{{ trans('comlink::comlink.level') }}: {{ trans('comlink::comlink.all') }}</option>
-            @foreach($levels as $level)
-              <option value="{{ $level }}" @selected(($filters['level'] ?? null) === $level)>{{ $level }}</option>
-            @endforeach
-          </select>
+          <div class="input-group input-group-sm">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="log_level">{{ trans('comlink::comlink.level') }}</label>
+            </div>
+            <select name="level" id="log_level" class="form-control">
+              <option value="">{{ trans('comlink::comlink.all') }}</option>
+              @foreach($levels as $level)
+                <option value="{{ $level }}" @selected(($filters['level'] ?? null) === $level)>{{ $level }}</option>
+              @endforeach
+            </select>
+          </div>
         </div>
         <div class="col-md-2">
-          <select name="driver" class="form-control form-control-sm" aria-label="{{ trans('comlink::comlink.driver') }}">
-            <option value="">{{ trans('comlink::comlink.driver') }}: {{ trans('comlink::comlink.all') }}</option>
-            @foreach($drivers as $driver)
-              <option value="{{ $driver }}" @selected(($filters['driver'] ?? null) === $driver)>{{ $driver }}</option>
-            @endforeach
-          </select>
+          <div class="input-group input-group-sm">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="log_driver">{{ trans('comlink::comlink.driver') }}</label>
+            </div>
+            <select name="driver" id="log_driver" class="form-control">
+              <option value="">{{ trans('comlink::comlink.all') }}</option>
+              @foreach($drivers as $driver)
+                <option value="{{ $driver }}" @selected(($filters['driver'] ?? null) === $driver)>{{ $driver }}</option>
+              @endforeach
+            </select>
+          </div>
         </div>
         <div class="col-md-2">
-          <select name="user" class="form-control form-control-sm" aria-label="{{ trans('comlink::comlink.log_user') }}">
-            <option value="">{{ trans('comlink::comlink.log_user') }}: {{ trans('comlink::comlink.all') }}</option>
-            <option value="system" @selected(($filters['user'] ?? null) === 'system')>{{ trans('comlink::comlink.log_system') }}</option>
-            @foreach($users as $id => $name)
-              <option value="{{ $id }}" @selected(($filters['user'] ?? null) == $id)>{{ $name }}</option>
-            @endforeach
-          </select>
+          <div class="input-group input-group-sm">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="log_user">{{ trans('comlink::comlink.log_user') }}</label>
+            </div>
+            <select name="user" id="log_user" class="form-control">
+              <option value="">{{ trans('comlink::comlink.all') }}</option>
+              <option value="system" @selected(($filters['user'] ?? null) === 'system')>{{ trans('comlink::comlink.log_system') }}</option>
+              @foreach($users as $id => $name)
+                <option value="{{ $id }}" @selected(($filters['user'] ?? null) == $id)>{{ $name }}</option>
+              @endforeach
+            </select>
+          </div>
         </div>
         @foreach(['from', 'to'] as $bound)
           <div class="col-md-2">
