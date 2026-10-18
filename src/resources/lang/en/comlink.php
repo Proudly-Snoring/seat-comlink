@@ -105,6 +105,28 @@ return [
     'sync_now' => 'Sync now',
     'sync_queued' => 'Synchronization of :server queued.',
 
+    // mappings
+    'server' => 'Discord server',
+    'squad' => 'Squad',
+    'role' => 'Role',
+    'mapping' => 'Mapping',
+    'add_mapping' => 'Add mapping',
+    'edit' => 'Edit',
+    'delete' => 'Delete',
+    'no_mappings' => 'No mapping.',
+    'orphan' => 'orphan',
+    'orphan_help' => 'This role has been deleted on discord: the mapping is ignored by the synchronization.',
+    'roles_help' => 'Roles as known at the last synchronization. Roles the bot cannot manage are displayed but not selectable.',
+    'import_roles' => 'Import roles now',
+    'import_roles_done' => '{0} No discord server found: invite the bot first.|{1} Roles imported from :count server.|[2,*] Roles imported from :count servers.',
+    'import_roles_failed' => 'Cannot import the roles from discord: :reason',
+    'mapping_saved' => 'Mapping saved.',
+    'mapping_removed' => 'Mapping removed.',
+    'mapping_delete_confirm' => 'Delete this mapping?',
+    'mapping_invalid_server' => 'Unknown discord server.',
+    'mapping_invalid_role' => 'This role does not exist on the selected server.',
+    'mapping_duplicate' => 'This mapping already exists.',
+
     // roles
     'role_reason_everyone' => 'The @everyone role cannot be assigned.',
     'role_reason_integration' => 'Managed by an integration (bot or subscription).',

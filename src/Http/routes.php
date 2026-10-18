@@ -50,6 +50,14 @@ Route::group([
     Route::group(['middleware' => 'can:comlink.mappings'], function () {
         Route::get('/mappings', [MappingsController::class, 'index'])
             ->name('seatcomlink::mappings');
+        Route::post('/mappings', [MappingsController::class, 'store'])
+            ->name('seatcomlink::mappings.store');
+        Route::post('/mappings/import-roles', [MappingsController::class, 'importRoles'])
+            ->name('seatcomlink::mappings.import');
+        Route::put('/mappings/{mapping}', [MappingsController::class, 'update'])
+            ->name('seatcomlink::mappings.update');
+        Route::delete('/mappings/{mapping}', [MappingsController::class, 'destroy'])
+            ->name('seatcomlink::mappings.destroy');
     });
 
     Route::group(['middleware' => 'can:comlink.settings'], function () {
