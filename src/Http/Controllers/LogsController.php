@@ -22,6 +22,10 @@
 
 namespace ProudlySnoring\Seat\Comlink\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Validation\Rule;
+use ProudlySnoring\Seat\Comlink\Models\ComlinkLog;
 use Seat\Web\Http\Controllers\Controller;
 
 /**
@@ -32,10 +36,31 @@ use Seat\Web\Http\Controllers\Controller;
 class LogsController extends Controller
 {
     /**
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('comlink::logs.index');
+        $filters = $request->validate([
+            'level' => ['nullable', Rule::in(ComlinkLog::LEVELS)],
+            'driver' => 'nullable|string|max:32',
+            'from' => 'nullable|date',
+            'to' => 'nullable|date',
+        ]);
+
+        $logs = ComlinkLog::with('user')
+            ->when($filters['level'] ?? null, fn ($query, $level) => $query->where('level', $level))
+            ->when($filters['driver'] ?? null, fn ($query, $driver) => $query->where('driver', $driver))
+            ->when($filters['from'] ?? null, fn ($query, $from) => $query->where('created_at', '>=', Carbon::parse($from)->startOfDay()))
+            ->when($filters['to'] ?? null, fn ($query, $to) => $query->where('created_at', '<=', Carbon::parse($to)->endOfDay()))
+            ->orderByDesc('created_at')->orderByDesc('id')
+            ->paginate(50)->withQueryString();
+
+        return view('comlink::logs.index', [
+            'logs' => $logs,
+            'filters' => $filters,
+            'levels' => ComlinkLog::LEVELS,
+            'drivers' => ComlinkLog::distinct()->orderBy('driver')->pluck('driver'),
+        ]);
     }
 }

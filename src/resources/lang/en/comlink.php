@@ -127,6 +127,23 @@ return [
     'mapping_invalid_role' => 'This role does not exist on the selected server.',
     'mapping_duplicate' => 'This mapping already exists.',
 
+    // logs
+    'date' => 'Date',
+    'level' => 'Level',
+    'driver' => 'Driver',
+    'message' => 'Message',
+    'from' => 'From',
+    'to' => 'To',
+    'no_logs' => 'No log.',
+
+    // users
+    'seat_user_id' => 'SeAT user ID',
+    'user_name' => 'Name',
+    'servers_nicknames' => 'Servers (nickname)',
+    'no_server' => 'Not seen on any server',
+    'no_users' => 'No linked user.',
+    'users_search' => 'Name, discord username or ID',
+
     // synchronization
     'reason_owner' => 'the server owner\'s nickname cannot be changed by a bot',
     'reason_above_bot' => 'the member is ranked above the bot\'s highest role',

@@ -22,20 +22,36 @@
 
 namespace ProudlySnoring\Seat\Comlink\Http\Controllers;
 
+use Illuminate\Http\Request;
+use ProudlySnoring\Seat\Comlink\Models\DiscordUser;
 use Seat\Web\Http\Controllers\Controller;
 
 /**
- * Class UsersController.
+ * Linked users and their discord state.
  *
  * @package ProudlySnoring\Seat\Comlink\Http\Controllers
  */
 class UsersController extends Controller
 {
     /**
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('comlink::users.index');
+        $search = trim((string) $request->query('search'));
+
+        $users = DiscordUser::with(['user', 'members.server'])
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($sub) use ($search) {
+                    $sub->where('discord_id', $search)
+                        ->orWhere('username', 'like', '%' . $search . '%')
+                        ->orWhereHas('user', fn ($user) => $user->where('name', 'like', '%' . $search . '%'));
+                });
+            })
+            ->orderBy('user_id')
+            ->paginate(50)->withQueryString();
+
+        return view('comlink::users.index', compact('users', 'search'));
     }
 }
