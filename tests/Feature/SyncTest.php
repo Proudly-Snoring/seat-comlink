@@ -48,7 +48,7 @@ class SyncTest extends TestCase
         $fcs = $this->makeSquad('FCs', [$bob]);
         $directors = $this->makeSquad('Directors', [$dave, $erin]);
 
-        DiscordServer::create(['server_id' => '100', 'name' => 'Alliance']);
+        DiscordServer::create(['server_id' => '100', 'name' => 'Alliance', 'enforce_nickname' => true]);
         DiscordMapping::create(['server_id' => '100', 'squad_id' => $pilots->id, 'role_id' => '101']);
         DiscordMapping::create(['server_id' => '100', 'squad_id' => $fcs->id, 'role_id' => '101']);
         DiscordMapping::create(['server_id' => '100', 'squad_id' => $fcs->id, 'role_id' => '102']);

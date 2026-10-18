@@ -53,6 +53,9 @@ class ServersTest extends TestCase
     public function testUpdateServer()
     {
         $server = DiscordServer::create(['server_id' => '1', 'name' => 'Alliance']);
+        $server->refresh();
+        $this->assertFalse($server->enforce_nickname);
+        $this->assertTrue($server->enforce_roles);
 
         $this->actingAs($this->admin)->post(route('seatcomlink::servers.update', $server), [
             'enforce_nickname' => '1',
