@@ -97,7 +97,7 @@ All views are grouped in a "Comlink" sidebar menu, in this order: Identity, Disc
     * The list of discord servers where the bot is currently present, one card for each with:
         * The server icon (downloaded at each synchronization when changed and stored locally - SeAT's CSP blocks the discord CDN - or the discord logo if none), name and ID,
         * The datetime of the last synchronization (or "never"),
-        * A "Enforce nickname" checkbox - If checked (default), the bot enforce the discord nicknames for this server, else it doesn't touch it.
+        * A "Enforce nickname" checkbox - If checked (unchecked by default), the bot enforce the discord nicknames for this server, else it doesn't touch it.
         * A "Enforce roles" checkbox - If checked (default), the bot enforce the discord roles for this server, else it doesn't touch it.
         * The nickname format (if "Enforce nickname" is checked) - default is `[{corp_ticker}] {character}`:
             * its label includes a live preview for the current admin (ex: "Nickname format - ex: [PR.SN] Ryanis"),
