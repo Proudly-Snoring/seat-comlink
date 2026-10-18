@@ -67,7 +67,7 @@ class SyncTest extends TestCase
         $this->installDiscordFake();
     }
 
-    private function link(string $name, string $discord_id, array $character)
+    private function link(string $name, string $discord_id, ?array $character)
     {
         $user = $this->makeUser($name, $character);
         DiscordUser::create(['user_id' => $user->id, 'discord_id' => $discord_id, 'username' => $name . '_d']);
@@ -202,6 +202,18 @@ class SyncTest extends TestCase
         $this->sync();
 
         $this->assertContains('PATCH /guilds/100/members/11 Alice of Pilots Inc -', $this->fake_writes);
+    }
+
+    public function testNicknameIsLeftAloneWithoutCharacter()
+    {
+        $this->link('frank', '18', null);
+        $this->fake_guilds['100']['members']['18'] = ['user' => ['id' => '18', 'username' => 'frank_d', 'bot' => false], 'nick' => 'Frankie', 'roles' => []];
+
+        $this->sync();
+
+        $this->assertEmpty(array_filter($this->fake_writes, fn ($write) => str_starts_with($write, 'PATCH /guilds/100/members/18')));
+        $this->assertSame(0, ComlinkLog::where('message', 'like', '%(discord id: 18)%')->count());
+        $this->assertSame('Frankie', DiscordMember::where('discord_id', '18')->value('nickname'));
     }
 
     public function testOrphanMappingsAreIgnored()

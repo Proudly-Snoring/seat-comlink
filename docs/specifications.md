@@ -45,6 +45,7 @@
 ## Nicknames
 
 * The nickname is built from a "selected character": the user's main character or, if none, the first character linked to their SeAT account.
+  If no character can be selected (ex: no valid token, character info not fetched yet), the nickname is left untouched.
 * The nickname format accepts the following tokens:
     * `{character}`: the name of the selected character,
     * `{corp_ticker}`: the ticker of the selected character's corporation,
