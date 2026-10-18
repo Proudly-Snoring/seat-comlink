@@ -87,7 +87,8 @@ All views are grouped in a "Comlink" sidebar menu, in this order: Identity, Disc
     * The card footer holds the following buttons: "Import roles now" and "Sync now" on the left, "Add mapping" on the right.
     * The "Add mapping" button allows to add more rows.
         * The server, squad and role are picked from lists (roles as known at the last synchronization).
-        * Roles that the bot cannot manage (above the bot's role, or managed by an integration) are displayed but not selectable, with the reason.
+        * Roles above the bot's role are displayed but not selectable, after the selectable ones, with the reason "Not manageable (above the bot role)".
+        * The @everyone role and the roles managed by an integration are not listed (a bot can never assign them).
     * The "Import roles now" button refreshes the servers and roles lists from discord immediately (without waiting for the next synchronization).
     * The "Sync now" button forces the synchronization of all the discord servers now (queued, runs in background).
     * Intended for admins only (configurable from the standard SeAT roles management).

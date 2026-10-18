@@ -134,8 +134,9 @@
             <label for="mapping_role">{{ trans('comlink::comlink.role') }}</label>
             <select name="role_id" id="mapping_role" class="form-control" required>
               @foreach($servers as $server)
-                @foreach($server->roles as $role)
-                  @php($reason = $role->unmanageableReason($server->bot_top_position))
+                {{-- @everyone and integration roles hidden; selectable roles first, each group by position --}}
+                @foreach($server->roles->filter->isAssignable()->sortBy(fn ($role) => ! is_null($role->unmanageableReason($server->bot_top_position))) as $role)
+                  @php($reason = $role->unmanageableReason($server->bot_top_position, true))
                   <option value="{{ $role->role_id }}" data-server="{{ $server->server_id }}" @disabled($reason)>
                     {{ $role->name }}@if($reason) - {{ $reason }}@endif
                   </option>
