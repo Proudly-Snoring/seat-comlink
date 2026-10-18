@@ -50,7 +50,7 @@
         <tbody>
           @forelse($mappings as $mapping)
             <tr>
-              <td>{{ $mapping->server_name }}</td>
+              <td>{{ $mapping->server_name }}@if(! $mapping->server?->present) <span class="badge badge-warning" title="{{ trans('comlink::comlink.absent_help') }}">{{ trans('comlink::comlink.absent') }}</span>@endif</td>
               <td>{{ $mapping->squad_name }} <span class="text-muted" title="{{ trans('comlink::comlink.squad_count') }}">({{ $squad_counts[$mapping->squad_id] ?? 0 }})</span></td>
               <td>
                 <span style="color: {{ $mapping->role->hex_color ?? '#99aab5' }}">&#9679;</span>
@@ -65,7 +65,8 @@
               <td class="text-right text-nowrap">
                 <button type="button" class="btn btn-xs btn-warning comlink-edit-mapping"
                         data-action="{{ route('seatcomlink::mappings.update', $mapping) }}"
-                        data-server="{{ $mapping->server_id }}" data-squad="{{ $mapping->squad_id }}" data-role="{{ $mapping->role_id }}">
+                        data-server="{{ $mapping->server_id }}" data-squad="{{ $mapping->squad_id }}" data-role="{{ $mapping->role_id }}"
+                        @disabled(! $mapping->server?->present)>
                   <i class="fas fa-pen"></i> {{ trans('comlink::comlink.edit') }}
                 </button>
                 <form method="post" action="{{ route('seatcomlink::mappings.destroy', $mapping) }}" class="d-inline comlink-delete-mapping">

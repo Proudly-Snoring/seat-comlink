@@ -27,6 +27,7 @@
     * If the user ID is known, it also enforces their nickname.
 * Changes detected at each synchronization:
     * A server that appears / disappears from the bot's servers list is logged as an invitation / removal.
+      On removal, its members as seen at the last synchronization are forgotten (its mappings are kept).
     * A role that has been deleted on discord marks its mappings as "orphan" (displayed as such in the mapping view and ignored by the synchronization), and an error is logged.
 * Users link their discord account with their SeAT account via the OAuth protocol.
     * In the SeAT, they click on a "link my discord" button. This triggers the OAuth flow.
@@ -81,6 +82,7 @@ All views are grouped in a "Comlink" sidebar menu, in this order: Identity, Disc
           (with an "orphan" badge if the role has been deleted on discord),
         * An "Edit" button,
         * A "Delete" button.
+    * Mappings of a server the bot has been removed from are kept, flagged as such, and can be deleted but not edited.
     * The table must be filterable by discord server, squad name and role name.
     * The card footer holds the following buttons: "Import roles now" and "Sync now" on the left, "Add mapping" on the right.
     * The "Add mapping" button allows to add more rows.
@@ -128,6 +130,7 @@ All views are grouped in a "Comlink" sidebar menu, in this order: Identity, Disc
             * A button masks/unmasks the procedure.
             * It is visible by default if the credentials are not set, masked by default otherwise.
         * The discord bot credentials (client ID, client secret, bot token - editable - secrets masked by default but with a button to reveal them),
+          the values typed by the admin being kept if the form is rejected (ex: invalid client ID),
         * The OAuth callback URL to register in the discord application (read only, with a copy button),
         * An "Invite bot" button opening the discord invitation page with the required permissions,
         * The rate of the synchronization, picked from a list: 1, 2, 3, 4, 5 (default), 6, 10, 12, 15, 20, 30 or 60 minutes,
@@ -140,6 +143,7 @@ Each view must have a corresponding entry in the SeAT Access Management configur
 
 * When an admin changes a mapping: `Added/edited/removed mapping SQUAD_NAME -> ROLE_NAME for discord server SERVER_NAME` (level info).
 * When an admin changes the settings: `Updated discord settings` (level info).
+* When an admin changes the options of a discord server: `Updated settings of discord server SERVER_NAME` (level info).
 * When an admin clicks on "Import roles now": `Imported discord roles from N servers` (level info).
 * When an admin clicks on "Sync now": `Requested a manual synchronization of all discord servers` (level info).
 * When a role is added/removed or a nickname is updated: `Added/Removed role ROLE_NAME to/from user ...` / `Updated nickname of user ... to NICKNAME` (level info).

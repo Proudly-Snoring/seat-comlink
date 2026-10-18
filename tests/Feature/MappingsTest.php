@@ -3,7 +3,9 @@
 namespace ProudlySnoring\Seat\Comlink\Tests\Feature;
 
 use ProudlySnoring\Seat\Comlink\Models\ComlinkLog;
+use ProudlySnoring\Seat\Comlink\Models\DiscordIssue;
 use ProudlySnoring\Seat\Comlink\Models\DiscordMapping;
+use ProudlySnoring\Seat\Comlink\Models\DiscordMember;
 use ProudlySnoring\Seat\Comlink\Models\DiscordRole;
 use ProudlySnoring\Seat\Comlink\Models\DiscordServer;
 use ProudlySnoring\Seat\Comlink\Services\ComlinkSettings;
@@ -194,6 +196,43 @@ class MappingsTest extends TestCase
 
         $this->assertFalse(DiscordServer::where('server_id', '100')->first()->present);
         $this->assertSame(1, ComlinkLog::where('message', 'Removed from server Alliance')->count());
+    }
+
+    public function testRemovedServerForgetsMembersAndKeepsMappings()
+    {
+        ComlinkSettings::setCredentials('1', 'secret', 'token');
+        DiscordMapping::create($this->mapping());
+        DiscordMember::create(['server_id' => '100', 'discord_id' => '11', 'nickname' => 'Alice']);
+        DiscordIssue::create(['server_id' => '100', 'discord_id' => '11', 'kind' => 'nickname', 'reason_hash' => 'x']);
+        $this->installDiscordFake();
+
+        $this->actingAs($this->admin)->post(route('seatcomlink::mappings.import'))->assertSessionHas('success');
+
+        $this->assertSame(0, DiscordMember::count());
+        $this->assertSame(0, DiscordIssue::count());
+        $this->assertSame(1, DiscordMapping::count());
+    }
+
+    public function testMappingsOfRemovedServersAreFlaggedAndNotEditable()
+    {
+        $mapping = DiscordMapping::create($this->mapping());
+
+        $this->actingAs($this->admin)->get(route('seatcomlink::mappings'))
+            ->assertSee('<td>Alliance</td>', false)
+            ->assertDontSee(trans('comlink::comlink.absent_help'));
+
+        DiscordServer::where('server_id', '100')->update(['present' => false]);
+
+        $this->actingAs($this->admin)->get(route('seatcomlink::mappings'))
+            ->assertSee(trans('comlink::comlink.absent_help'))
+            ->assertSee('data-role="101"
+                        disabled>', false);
+
+        // edit rejected server side, delete allowed
+        $this->actingAs($this->admin)->put(route('seatcomlink::mappings.update', $mapping), $this->mapping())
+            ->assertSessionHasErrors('server_id');
+        $this->actingAs($this->admin)->delete(route('seatcomlink::mappings.destroy', $mapping))->assertSessionHas('success');
+        $this->assertSame(0, DiscordMapping::count());
     }
 
     public function testImportRolesRequiresCredentials()

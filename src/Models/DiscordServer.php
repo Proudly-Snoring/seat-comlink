@@ -74,22 +74,6 @@ class DiscordServer extends ExtensibleModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function mappings()
-    {
-        return $this->hasMany(DiscordMapping::class, 'server_id', 'server_id');
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function members()
-    {
-        return $this->hasMany(DiscordMember::class, 'server_id', 'server_id');
-    }
-
-    /**
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */

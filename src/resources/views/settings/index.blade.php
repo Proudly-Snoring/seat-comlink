@@ -63,7 +63,7 @@
           <div class="form-group">
             <label for="{{ $field }}">{{ trans('comlink::comlink.' . $field) }}</label>
             <div class="input-group">
-              <input type="password" class="form-control" name="{{ $field }}" id="{{ $field }}" value="{{ $value }}" autocomplete="new-password">
+              <input type="password" class="form-control" name="{{ $field }}" id="{{ $field }}" value="{{ old($field, $value) }}" autocomplete="new-password">
               <div class="input-group-append">
                 <button type="button" class="btn btn-default comlink-reveal" data-target="#{{ $field }}" title="{{ trans('comlink::comlink.reveal') }}">
                   <i class="fas fa-eye"></i>

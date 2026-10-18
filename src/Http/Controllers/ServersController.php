@@ -72,7 +72,7 @@ class ServersController extends Controller
 
         $server->save();
 
-        ComlinkLogger::info('Updated discord settings', ['server' => $server->name]);
+        ComlinkLogger::info(sprintf('Updated settings of discord server %s', $server->name));
 
         return redirect()->route('seatcomlink::servers')
             ->with('success', trans('comlink::comlink.settings_saved'));

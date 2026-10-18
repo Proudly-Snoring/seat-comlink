@@ -23,7 +23,9 @@
 namespace ProudlySnoring\Seat\Comlink\Drivers\Discord;
 
 use Illuminate\Support\Collection;
+use ProudlySnoring\Seat\Comlink\Models\DiscordIssue;
 use ProudlySnoring\Seat\Comlink\Models\DiscordMapping;
+use ProudlySnoring\Seat\Comlink\Models\DiscordMember;
 use ProudlySnoring\Seat\Comlink\Models\DiscordRole;
 use ProudlySnoring\Seat\Comlink\Models\DiscordServer;
 use ProudlySnoring\Seat\Comlink\Services\ComlinkLogger;
@@ -81,6 +83,10 @@ class ServerRefresher
         DiscordServer::present()->whereNotIn('server_id', $guilds->keys()->map('strval')->all())->get()
             ->each(function (DiscordServer $server) {
                 $server->update(['present' => false]);
+
+                // never synchronized again until re-invited: rebuilt by the next sync
+                DiscordMember::where('server_id', $server->server_id)->delete();
+                DiscordIssue::where('server_id', $server->server_id)->delete();
 
                 ComlinkLogger::info(sprintf('Removed from server %s', $server->name));
             });

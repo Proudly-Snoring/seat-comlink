@@ -34,10 +34,6 @@ class DiscordException extends RuntimeException
 
     const MISSING_PERMISSIONS = 50013;
 
-    const UNKNOWN_MEMBER = 10007;
-
-    const UNKNOWN_ROLE = 10011;
-
     /**
      * @var int  HTTP status (0 on network error)
      */

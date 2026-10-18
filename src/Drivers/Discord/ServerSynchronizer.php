@@ -111,7 +111,7 @@ class ServerSynchronizer
             if ($user_id) {
                 DiscordMember::updateOrCreate(
                     ['server_id' => $server->server_id, 'discord_id' => $discord_id],
-                    ['nickname' => $nickname, 'seen_at' => now()]);
+                    ['nickname' => $nickname]);
                 $seen[] = $discord_id;
             }
         }

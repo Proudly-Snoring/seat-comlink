@@ -63,14 +63,6 @@ class DiscordRole extends ExtensibleModel
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function server()
-    {
-        return $this->belongsTo(DiscordServer::class, 'server_id', 'server_id');
-    }
-
-    /**
      * @return bool
      */
     public function isOrphan(): bool

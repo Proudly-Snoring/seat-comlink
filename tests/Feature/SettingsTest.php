@@ -81,6 +81,19 @@ class SettingsTest extends TestCase
         $this->assertSame(0, ComlinkLog::count());
     }
 
+    public function testTypedSecretsAreKeptOnValidationError()
+    {
+        ComlinkSettings::setCredentials('123456789012345678', 'old-secret', 'old-token');
+
+        $this->actingAs($this->admin)->from(route('seatcomlink::settings'))
+            ->followingRedirects()
+            ->post(route('seatcomlink::settings.update'), $this->validSettings(['client_id' => 'abc', 'bot_token' => 'new-token']))
+            ->assertSee('value="new-token"', false)
+            ->assertDontSee('old-token');
+
+        $this->assertSame('old-token', ComlinkSettings::botToken());
+    }
+
     public function testServersAreNotInSettings()
     {
         DiscordServer::create(['server_id' => '1', 'name' => 'Alliance']);

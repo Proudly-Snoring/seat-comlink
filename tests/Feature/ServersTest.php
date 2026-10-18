@@ -53,7 +53,7 @@ class ServersTest extends TestCase
         $this->assertTrue($server->enforce_nickname);
         $this->assertFalse($server->enforce_roles);
         $this->assertSame('{character} ({corp_ticker})', $server->nickname_format);
-        $this->assertSame(1, ComlinkLog::where('message', 'Updated discord settings')->count());
+        $this->assertSame(1, ComlinkLog::where('message', 'Updated settings of discord server Alliance')->count());
 
         $this->actingAs($this->admin)->post(route('seatcomlink::servers.update', $server), [
             'enforce_nickname' => '1',

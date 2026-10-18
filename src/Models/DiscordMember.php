@@ -31,7 +31,6 @@ use Seat\Services\Models\ExtensibleModel;
  * @property string $server_id
  * @property string $discord_id
  * @property string|null $nickname
- * @property \Carbon\Carbon|null $seen_at
  */
 class DiscordMember extends ExtensibleModel
 {
@@ -43,14 +42,7 @@ class DiscordMember extends ExtensibleModel
     /**
      * @var array
      */
-    protected $fillable = ['server_id', 'discord_id', 'nickname', 'seen_at'];
-
-    /**
-     * @var array
-     */
-    protected $casts = [
-        'seen_at' => 'datetime',
-    ];
+    protected $fillable = ['server_id', 'discord_id', 'nickname'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

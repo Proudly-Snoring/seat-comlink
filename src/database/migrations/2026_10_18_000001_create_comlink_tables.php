@@ -66,6 +66,8 @@ return new class extends Migration
             $table->integer('position')->default(0);
             $table->unsignedInteger('color')->default(0);
             $table->boolean('managed')->default(false);
+            // members holding the role at the last synchronization (null until the first one)
+            $table->unsignedInteger('member_count')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -86,7 +88,6 @@ return new class extends Migration
             $table->string('server_id', 32);
             $table->string('discord_id', 32)->index();
             $table->string('nickname')->nullable();
-            $table->timestamp('seen_at')->nullable();
             $table->timestamps();
 
             $table->unique(['server_id', 'discord_id']);

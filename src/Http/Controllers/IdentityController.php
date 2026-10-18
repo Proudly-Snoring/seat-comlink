@@ -100,7 +100,7 @@ class IdentityController extends Controller
 
         // the account is linked to someone else: ask for confirmation first
         if ($owner) {
-            $request->session()->put(self::PENDING_KEY, $account + ['old_user_id' => $owner->user_id]);
+            $request->session()->put(self::PENDING_KEY, $account);
 
             return redirect()->route('seatcomlink::identity');
         }
