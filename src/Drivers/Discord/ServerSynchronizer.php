@@ -105,7 +105,8 @@ class ServerSynchronizer
 
             $nickname = $member['nick'] ?? null;
 
-            if ($user_id && $server->enforce_nickname)
+            // no resolved character: nothing to render, the nickname is left alone
+            if ($user_id && $server->enforce_nickname && isset($this->values[$user_id]['character']))
                 $nickname = $this->syncNickname($member, $user_id, $label);
 
             if ($user_id) {
