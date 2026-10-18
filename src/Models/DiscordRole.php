@@ -71,12 +71,23 @@ class DiscordRole extends ExtensibleModel
     }
 
     /**
+     * Whether a bot can ever assign this role (not @everyone, not managed by an integration), whatever the hierarchy.
+     *
+     * @return bool
+     */
+    public function isAssignable(): bool
+    {
+        return $this->role_id !== $this->server_id && ! $this->managed;
+    }
+
+    /**
      * Return the reason why the bot cannot manage this role, or null if it can.
      *
      * @param  int  $bot_top_position  the position of the bot's highest role
+     * @param  bool  $short  short version (roles list) instead of the actionable one (logs, validation)
      * @return string|null
      */
-    public function unmanageableReason(int $bot_top_position): ?string
+    public function unmanageableReason(int $bot_top_position, bool $short = false): ?string
     {
         if ($this->role_id === $this->server_id)
             return trans('comlink::comlink.role_reason_everyone');
@@ -85,7 +96,7 @@ class DiscordRole extends ExtensibleModel
             return trans('comlink::comlink.role_reason_integration');
 
         if ($this->position >= $bot_top_position)
-            return trans('comlink::comlink.role_reason_hierarchy');
+            return trans($short ? 'comlink::comlink.role_reason_hierarchy_short' : 'comlink::comlink.role_reason_hierarchy');
 
         return null;
     }

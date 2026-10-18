@@ -127,7 +127,7 @@ return [
     'orphan_help' => 'This role has been deleted on discord: the mapping is ignored by the synchronization.',
     'absent' => 'bot removed',
     'absent_help' => 'The bot has been removed from this discord server: the mapping cannot be edited, only deleted.',
-    'roles_help' => 'Roles as known at the last synchronization. Roles the bot cannot manage are displayed but not selectable.',
+    'roles_help' => 'Roles as known at the last synchronization. Roles above the bot\'s highest role are displayed but not selectable.',
     'import_roles' => 'Import roles now',
     'import_roles_done' => '{0} No discord server found: invite the bot first.|{1} Roles imported from :count server.|[2,*] Roles imported from :count servers.',
     'import_roles_failed' => 'Cannot import the roles from discord: :reason',
@@ -165,4 +165,5 @@ return [
     'role_reason_everyone' => 'The @everyone role cannot be assigned.',
     'role_reason_integration' => 'Managed by an integration (bot or subscription).',
     'role_reason_hierarchy' => 'Above the bot\'s highest role: move the bot\'s role up on discord.',
+    'role_reason_hierarchy_short' => 'Not manageable (above the bot role)',
 ];

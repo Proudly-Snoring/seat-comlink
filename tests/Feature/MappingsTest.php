@@ -47,9 +47,24 @@ class MappingsTest extends TestCase
             ->assertOk()
             ->assertSee('<option value="101" data-server="100" >', false)
             ->assertSee('<option value="102" data-server="100" disabled>', false)
-            ->assertSee(trans('comlink::comlink.role_reason_hierarchy'))
-            ->assertSee(trans('comlink::comlink.role_reason_integration'))
-            ->assertSee(trans('comlink::comlink.role_reason_everyone'));
+            ->assertSee(trans('comlink::comlink.role_reason_hierarchy_short'))
+            ->assertDontSee(trans('comlink::comlink.role_reason_hierarchy'));
+    }
+
+    public function testNeverAssignableRolesAreHidden()
+    {
+        $this->actingAs($this->admin)->get(route('seatcomlink::mappings'))
+            ->assertDontSee('<option value="100" data-server="100"', false)   // @everyone
+            ->assertDontSee('<option value="103" data-server="100"', false)   // integration
+            ->assertDontSee(trans('comlink::comlink.role_reason_integration'))
+            ->assertDontSee(trans('comlink::comlink.role_reason_everyone'));
+    }
+
+    public function testSelectableRolesAreListedFirst()
+    {
+        // selectable first, then above the bot, each by position
+        $this->actingAs($this->admin)->get(route('seatcomlink::mappings'))
+            ->assertSeeInOrder(['value="101" data-server="100"', 'value="102" data-server="100"'], false);
     }
 
     public function testAddMapping()
