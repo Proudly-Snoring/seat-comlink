@@ -9,17 +9,20 @@
     <div class="card-body">
 
       <form method="get" action="{{ route('seatcomlink::logs') }}" class="form-row mb-3">
-        <div class="col-md-2">
+        <div class="col-md-auto">
           <div class="input-group input-group-sm">
             <div class="input-group-prepend">
-              <label class="input-group-text" for="log_level">{{ trans('comlink::comlink.level') }}</label>
+              <span class="input-group-text" id="log_level">{{ trans('comlink::comlink.level') }}</span>
             </div>
-            <select name="level" id="log_level" class="form-control">
-              <option value="">{{ trans('comlink::comlink.all') }}</option>
-              @foreach($levels as $level)
-                <option value="{{ $level }}" @selected(($filters['level'] ?? null) === $level)>{{ $level }}</option>
+            {{-- no level toggled: default levels (all but debug) --}}
+            <div class="input-group-append btn-group-toggle" data-toggle="buttons" role="group" aria-labelledby="log_level">
+              @foreach($levels as $level => $class)
+                @php($active = in_array($level, $filters['level'], true))
+                <label @class(['btn', 'btn-outline-' . $class, 'active' => $active])>
+                  <input type="checkbox" name="level[]" value="{{ $level }}" id="log_level_{{ $level }}" autocomplete="off" @checked($active)> {{ $level }}
+                </label>
               @endforeach
-            </select>
+            </div>
           </div>
         </div>
         <div class="col-md-2">
@@ -40,13 +43,8 @@
             <div class="input-group-prepend">
               <label class="input-group-text" for="log_user">{{ trans('comlink::comlink.log_user') }}</label>
             </div>
-            <select name="user" id="log_user" class="form-control">
-              <option value="">{{ trans('comlink::comlink.all') }}</option>
-              <option value="system" @selected(($filters['user'] ?? null) === 'system')>{{ trans('comlink::comlink.log_system') }}</option>
-              @foreach($users as $id => $name)
-                <option value="{{ $id }}" @selected(($filters['user'] ?? null) == $id)>{{ $name }}</option>
-              @endforeach
-            </select>
+            <input type="text" name="user" id="log_user" class="form-control" value="{{ $filters['user'] }}"
+                   placeholder="{{ trans('comlink::comlink.log_user_search') }}">
           </div>
         </div>
         @foreach(['from', 'to'] as $bound)
@@ -59,7 +57,7 @@
             </div>
           </div>
         @endforeach
-        <div class="col-md-2">
+        <div class="col-md-auto">
           <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-filter"></i> {{ trans('comlink::comlink.filter') }}</button>
           <a href="{{ route('seatcomlink::logs') }}" class="btn btn-sm btn-default">{{ trans('comlink::comlink.reset') }}</a>
         </div>

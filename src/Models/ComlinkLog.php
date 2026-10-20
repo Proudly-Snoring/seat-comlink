@@ -70,11 +70,20 @@ class ComlinkLog extends ExtensibleModel
      */
     public function getLevelClassAttribute(): string
     {
+        return self::levelClass($this->level);
+    }
+
+    /**
+     * @param  string  $level
+     * @return string bootstrap contextual class of the level
+     */
+    public static function levelClass(string $level): string
+    {
         return [
             'debug' => 'secondary',
             'info' => 'info',
             'warning' => 'warning',
             'error' => 'danger',
-        ][$this->level] ?? 'secondary';
+        ][$level] ?? 'secondary';
     }
 }
