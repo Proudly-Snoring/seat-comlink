@@ -145,6 +145,7 @@ return [
     'message' => 'Message',
     'log_user' => 'User',
     'log_system' => 'System',
+    'log_user_search' => 'Name or "System"',
     'from' => 'From',
     'to' => 'To',
     'no_logs' => 'No log.',

@@ -27,7 +27,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use ProudlySnoring\Seat\Comlink\Models\ComlinkLog;
 use Seat\Web\Http\Controllers\Controller;
-use Seat\Web\Models\User;
 
 /**
  * Class LogsController.
@@ -36,8 +35,8 @@ use Seat\Web\Models\User;
  */
 class LogsController extends Controller
 {
-    // user filter value for logs without origin user (synchronization)
-    const SYSTEM = 'system';
+    // levels displayed when none is requested (debug logs clutter the view)
+    const DEFAULT_LEVELS = ['info', 'warning', 'error'];
 
     /**
      * @param  \Illuminate\Http\Request  $request
@@ -46,17 +45,25 @@ class LogsController extends Controller
     public function index(Request $request)
     {
         $filters = $request->validate([
-            'level' => ['nullable', Rule::in(ComlinkLog::LEVELS)],
+            'level' => 'nullable|array',
+            'level.*' => [Rule::in(ComlinkLog::LEVELS)],
             'driver' => 'nullable|string|max:32',
             'from' => 'nullable|date',
             'to' => 'nullable|date',
-            'user' => ['nullable', 'regex:/^(system|\d+)$/'],
+            'user' => 'nullable|string|max:255',
         ]);
+        $filters['level'] = ($filters['level'] ?? null) ?: self::DEFAULT_LEVELS;
+        $filters['user'] = trim((string) ($filters['user'] ?? ''));
 
         $logs = ComlinkLog::with('user')
-            ->when($filters['level'] ?? null, fn ($query, $level) => $query->where('level', $level))
-            ->when($filters['user'] ?? null, function ($query, $user) {
-                $user === self::SYSTEM ? $query->whereNull('user_id') : $query->where('user_id', (int) $user);
+            ->whereIn('level', $filters['level'])
+            // partial match on the user name, or on the "System" label for logs without origin user
+            ->when($filters['user'] !== '', function ($query) use ($filters) {
+                $query->where(function ($sub) use ($filters) {
+                    $sub->whereHas('user', fn ($user) => $user->where('name', 'like', '%' . $filters['user'] . '%'));
+                    if (stripos(trans('comlink::comlink.log_system'), $filters['user']) !== false)
+                        $sub->orWhereNull('user_id');
+                });
             })
             ->when($filters['driver'] ?? null, fn ($query, $driver) => $query->where('driver', $driver))
             ->when($filters['from'] ?? null, fn ($query, $from) => $query->where('created_at', '>=', Carbon::parse($from)->startOfDay()))
@@ -67,11 +74,9 @@ class LogsController extends Controller
         return view('comlink::logs.index', [
             'logs' => $logs,
             'filters' => $filters,
-            'levels' => ComlinkLog::LEVELS,
+            // level => bootstrap contextual class
+            'levels' => collect(ComlinkLog::LEVELS)->mapWithKeys(fn ($level) => [$level => ComlinkLog::levelClass($level)]),
             'drivers' => ComlinkLog::distinct()->orderBy('driver')->pluck('driver'),
-            // users at the origin of at least one log
-            'users' => User::whereIn('id', ComlinkLog::whereNotNull('user_id')->distinct()->select('user_id'))
-                ->orderBy('name')->pluck('name', 'id'),
         ]);
     }
 }

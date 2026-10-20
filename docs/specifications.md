@@ -120,7 +120,7 @@ All views are grouped in a "Comlink" sidebar menu, in this order: Identity, Disc
         * The driver name (only "discord" for now),
         * The user at the origin of the event ("System" for the synchronization),
         * The actual log message (plain text).
-    * The table must be filterable by log level, driver name, user (including "System"), and date range (two date inputs explicitly labelled "From" and "To").
+    * The table must be filterable by log levels (colored toggle buttons, several at once, all but debug by default), driver name, user (free text partially matching the user name or "System"), and date range (two date inputs explicitly labelled "From" and "To").
     * Intended for admins only (configurable from the standard SeAT roles management).
 * Comlink/Settings
     * The plugin settings with:
